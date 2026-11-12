@@ -1,0 +1,102 @@
+<style>
+.auth-split { display:grid; grid-template-columns:1fr 1fr; min-height:100vh; }
+.auth-left { background:linear-gradient(135deg,#e8f5e0 0%,#c8e6b8 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 40px; }
+.auth-left-logo { font-size:22px; font-weight:800; color:#2d5a27; display:flex; align-items:center; gap:10px; margin-bottom:32px; }
+.auth-left-desc { font-size:15px; color:#4a7a44; margin-bottom:40px; text-align:center; line-height:1.6; }
+.auth-characters { display:flex; gap:24px; align-items:flex-end; margin-top:8px; }
+.auth-char { height:80px; object-fit:contain; }
+@keyframes floatAB {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes floatBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.char-ab {
+  animation: floatAB 2s ease-in-out infinite;
+}
+.char-bounce {
+  animation: floatBounce 2s ease-in-out infinite;
+  animation-delay: 1s;
+}
+.auth-right { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 80px; background:#fff; }
+.auth-tabs { display:flex; width:100%; max-width:400px; border-bottom:2px solid #eee; margin-bottom:32px; }
+.auth-tab { flex:1; text-align:center; padding:14px; text-decoration:none; color:#aaa; font-size:15px; font-weight:600; }
+.auth-tab.active { color:#2d5a27; border-bottom:2px solid #2d5a27; margin-bottom:-2px; }
+.auth-form { width:100%; max-width:400px; }
+.form-group { margin-bottom:14px; }
+.form-input { width:100%; padding:14px 16px; border:1.5px solid #e8e8e8; border-radius:12px; font-size:14px; box-sizing:border-box; font-family:inherit; background:#fafafa; }
+input::-ms-reveal, input::-ms-clear { display:none; }
+input::-webkit-credentials-auto-fill-button { display:none; }
+.form-input:focus { outline:none; border-color:#2d5a27; background:#fff; }
+.form-check { display:flex; align-items:center; gap:8px; font-size:13px; color:#888; margin-bottom:16px; }
+.btn-auth { width:100%; padding:15px; background:#2d5a27; color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; }
+.btn-auth:hover { background:#245020; }
+.auth-links { display:flex; justify-content:center; gap:24px; margin-top:20px; }
+.auth-links a { font-size:13px; color:#aaa; text-decoration:none; }
+.flash-msg { padding:10px 16px; border-radius:10px; font-size:13px; margin-bottom:16px; width:100%; max-width:400px; box-sizing:border-box; }
+.flash-error { background:#fff0f0; color:#c0392b; border:1px solid #f5c6cb; }
+.flash-success { background:#f0fff4; color:#27ae60; border:1px solid #b2dfdb; }
+.auth-divider { text-align:center; color:#ddd; font-size:12px; margin:18px 0; position:relative; }
+.auth-divider::before,.auth-divider::after { content:''; position:absolute; top:50%; width:40%; height:1px; background:#eee; }
+.auth-divider::before { left:0; } .auth-divider::after { right:0; }
+.social-btns { display:flex; justify-content:center; gap:14px; }
+.social-btn { width:46px; height:46px; border-radius:50%; border:1.5px solid #eee; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:18px; background:#fff; font-weight:700; color:#555; }
+</style>
+
+<div class="auth-split">
+  <div class="auth-left">
+    <div class="auth-left-logo"><img src="/images/logo.png" style="height:96px;object-fit:contain;"></div>
+    <p class="auth-left-desc">포레시에 오신 것을 환영해요! <br>동네 이웃들과 함께 냉장고 관리를 시작해요</p>
+    <div class="auth-characters"style="margin-left:-30px;">
+      <img id="char-manage" src="/images/character/manage.png" class="auth-char char-ab">
+      <img id="char-complete" src="/images/character/complete.png" class="auth-char char-bounce">
+      <img id="char-park" src="/images/character/park.png" class="auth-char char-ab">
+    </div>
+  </div>
+  <div class="auth-right">
+    <% if (error && error.length > 0) { %>
+      <div class="flash-msg flash-error"><%= error[0] %></div>
+    <% } %>
+    <% if (success && success.length > 0) { %>
+      <div class="flash-msg flash-success"><%= success[0] %></div>
+    <% } %>
+
+    <div class="auth-tabs">
+      <a href="/auth/login" class="auth-tab active">로그인</a>
+      <a href="/auth/register" class="auth-tab">회원가입</a>
+    </div>
+
+    <form action="/auth/login" method="POST" class="auth-form">
+      <div class="form-group">
+        <input type="text" name="memberId" class="form-input" placeholder="아이디" required>
+      </div>
+      <div class="form-group" style="position:relative;">
+        <input type="password" name="password" id="loginPw" class="form-input" placeholder="비밀번호" required style="padding-right:44px;">
+        <button type="button" onclick="togglePw('loginPw', this)" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#aaa;display:flex;align-items:center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+      <button type="submit" class="btn-auth">로그인</button>
+    </form>
+
+    <div class="auth-links">
+      <a href="/auth/find-password" style="color: #888; text-decoration: none; font-size: 13px;">비밀번호를 잊어버리셨나요?</a>
+    </div>
+  </div>
+</div>
+<script>
+function togglePw(id, btn) {
+  const input = document.getElementById(id);
+  const eyeOpen = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+  const eyeClosed = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.innerHTML = eyeOpen;
+  } else {
+    input.type = 'password';
+    btn.innerHTML = eyeClosed;
+  }
+}
+</script>

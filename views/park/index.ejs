@@ -1,0 +1,126 @@
+<div class="park-wrapper">
+  <!-- 상단 HUD -->
+  <div class="park-hud-top">
+    <a href="#" class="hud-back-btn" onclick="saveAndLeave()">← 돌아가기</a>
+    <div class="hud-park-name">🌳 <%= park.parkName %> 🌳</div>
+    <div class="hud-right">
+      <span class="hud-user"><img src="/images/character/front.png" style="height:24px;object-fit:contain;vertical-align:middle;position:relative;top:-2px;margin-right:6px;"><%= user.memberName %></span>
+    </div>
+  </div>
+
+  <!-- 아이템 컨트롤 패널 -->
+  <div id="controlPanel">
+    <div class="ctrl-section">
+      <span class="ctrl-label">방향</span>
+      <div id="dirBtns" style="display:flex;gap:4px;"></div>
+    </div>
+    <div class="ctrl-section">
+      <span class="ctrl-label">크기</span>
+      <input type="range" class="ctrl-slider" id="sizeSlider" min="3" max="30" step="0.5" value="10"
+        oninput="changeSize(this.value)">
+    </div>
+    <div class="ctrl-section">
+      <span class="ctrl-label">회전</span>
+      <input type="range" class="ctrl-slider" id="rotateSlider" min="-180" max="180" step="1" value="0"
+        oninput="changeRotate(this.value)">
+      <span class="ctrl-value" id="rotateValue">0°</span>
+    </div>
+    <div class="ctrl-section">
+      <button class="ctrl-btn delete" onclick="deleteActiveItem()">🗑 삭제</button>
+    </div>
+  </div>
+
+  <!-- 배치 가이드 -->
+  <div class="placement-guide" id="placementGuide">
+    <img id="guideEmoji" src="" alt="">
+    <span id="guideName"></span>
+    <span style="color:rgba(255,255,255,.7);font-size:12px;">클릭해서 배치하세요</span>
+    <button onclick="cancelPlacement()">✕ 취소</button>
+  </div>
+
+
+  <!-- 공원 씬 -->
+  <div class="park-scene" id="parkScene">
+    <img class="park-bg-img" src="/images/park/bg.png" alt="공원 배경" draggable="false">
+    <div class="placed-items-layer" id="placedItems"></div>
+  </div>
+
+  <!-- 하단 인벤토리 -->
+  <div class="park-hud-bottom">
+    <div class="inventory-toggle" onclick="toggleInventory()">
+      <span class="inv-label">🎒 보유 아이템 (<span id="totalInvCount"><%= inventory.filter(i=>i.quantity>0).length %></span>개)</span>
+      <span class="inv-arrow" id="invArrow">▼</span>
+    </div>
+    <div class="inventory-content" id="inventoryContent">
+      <div class="inventory-tabs">
+        <button class="inv-tab active" onclick="filterInventory('all',this)">전체</button>
+        <button class="inv-tab" onclick="filterInventory('식물',this)">🌿 식물</button>
+        <button class="inv-tab" onclick="filterInventory('조명',this)">💡 조명</button>
+        <button class="inv-tab" onclick="filterInventory('가구',this)">🪑 가구</button>
+        <button class="inv-tab" onclick="filterInventory('장식',this)">✨ 장식</button>
+        <button class="inv-tab" onclick="filterInventory('바닥',this)">🪨 바닥</button>
+      </div>
+      <div class="inventory-items" id="inventoryItems">
+        <% if(inventory.filter(i=>i.quantity>0).length===0){ %>
+          <div class="inv-empty">아직 아이템이 없어요! 나눔하면 아이템을 획득해요 🌱</div>
+        <% } %>
+        <% inventory.forEach(inv=>{ %>
+          <% if(inv.quantity>0 && inv.template){ %>
+            <%
+              const imgMap = {
+                bench:'bench_front.png', wbench:'wbench_front.png', bench_log:'bench_log_width.png',
+                clock_tower:'clock_tower_front.png', flower_deco:'flower_deco_front.png',
+                flowerShop:'flowerShop_front.png', shelter:'shelter_front.png',
+                waterwheel:'waterwheel_front.png', table:'table_width.png', flowerbed:'flowerbed_width.png',
+                dandelion:'dandelion.png', dandelion2:'dandelion2.png', flower_ground:'flower_ground.png',
+                flowerFile:'flowerFile.png', flowerFile2:'flowerFile2.png', flowerPot:'flowerPot.png',
+                foxtail:'foxtail.png', fountain1:'fountain1.png', fountain2:'fountain2.png',
+                lamp1:'lamp1.png', lamp2:'lamp2.png', picnic:'picnic.png', pond:'pond.png',
+                pot:'pot.png', stone:'stone.png', stoneTile:'stoneTile.png',
+                tree_cherry:'tree_cherry.png', tree_pine:'tree_pine.png', tree:'tree.png', weed:'weed.png',
+              };
+              const imgFile = inv.template.itemImage ? (imgMap[inv.template.itemImage] || inv.template.itemImage + '.png') : (inv.template.itemEmoji || '');
+            %>
+            <div class="inv-item"
+              data-template-id="<%= inv.templateId %>"
+              data-item-key="<%= inv.template.itemImage || '' %>"
+              data-name="<%= inv.template.itemName %>"
+              data-category="<%= inv.template.itemCategory %>"
+              data-default-w="<%= inv.template.defaultW || 10 %>"
+              data-default-h="<%= inv.template.defaultH || 12 %>"
+              onclick="selectItem(this)"
+              title="<%= inv.template.itemDescription||inv.template.itemName %>"
+              style="position:relative;">
+              <% if (inv.isNew) { %>
+                <span style="position:absolute;top:4px;right:4px;background:#e53935;color:#fff;font-size:9px;padding:1px 5px;border-radius:8px;z-index:10;">NEW</span>
+              <% } %>
+              <img class="inv-item-img" src="/images/park/items/<%= imgFile %>" alt="<%= inv.template.itemName %>"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+              <span style="display:none;font-size:28px;"><%= inv.template.itemEmoji || '🌿' %></span>
+              <div class="inv-item-name"><%= inv.template.itemName %></div>
+              <div class="inv-item-count">x<%= inv.quantity %></div>
+            </div>
+          <% } %>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const serverPlacedItems = <%- placedItems %>;
+  // 서버 아이템을 클라이언트 형식으로 변환
+  const clientItems = serverPlacedItems.map(item => ({
+    id: item.parkItemId,
+    itemKey: item.template ? item.template.itemImage : '',
+    direction: item.direction || 'front',
+    x: item.posX,
+    y: item.posY,
+    w: item.sizeW || (item.template ? (item.template.defaultW || 10) : 10),
+    h: item.sizeH || (item.template ? (item.template.defaultH || 12) : 12),
+    rotate: item.rotate || 0,
+    flipX: false,
+    templateId: item.templateId,
+  }));
+  document.addEventListener('DOMContentLoaded', () => initPark(clientItems));
+</script>

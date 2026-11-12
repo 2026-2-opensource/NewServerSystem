@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>실시간 1:1 채팅</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    body { margin: 0; background-color: #f0f0f0; font-family: 'Pretendard', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; }
+    .chat-container { width: 100%; max-width: 500px; height: 100vh; max-height: 800px; background: #fff; display: flex; flex-direction: column; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    @media (min-width: 501px) { .chat-container { height: 90vh; border-radius: 20px; overflow: hidden; } }
+    
+    .chat-header { background: #2d5a27; color: #fff; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .chat-title { font-size: 18px; font-weight: 700; margin: 0; display:flex; align-items:center; gap:8px; cursor: pointer;}
+    .chat-subtitle { font-size: 13px; color: #e8f5e0; margin-top:4px; font-weight:400; }
+    .btn-close { color: #fff; text-decoration: none; font-size: 28px; line-height: 1; font-weight: bold; }
+
+    .action-bar { background: #f8fdf4; padding: 10px 20px; display: flex; gap: 10px; border-bottom: 1px solid #e8f5e0; align-items: center; justify-content: center; }
+    .btn-action { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .btn-reserve { background: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
+    .btn-complete { background: #2d5a27; color: #fff; }
+    .status-badge { background: #e0e0e0; color: #555; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+
+    .chat-messages { flex: 1; padding: 20px; overflow-y: auto; background: #f8fdf4; display: flex; flex-direction: column; gap: 16px; }
+    .msg-row { display: flex; flex-direction: column; max-width: 75%; position: relative; }
+    .msg-row.mine { align-self: flex-end; align-items: flex-end; }
+    .msg-row.other { align-self: flex-start; align-items: flex-start; }
+
+    .msg-sender { font-size: 12px; color: #666; margin-bottom: 4px; font-weight: 600; }
+    .msg-bubble { padding: 10px 16px; border-radius: 16px; font-size: 14px; line-height: 1.4; word-break: break-word; white-space: pre-wrap;}
+    .msg-row.mine .msg-bubble { background: #2d5a27; color: #fff; border-bottom-right-radius: 4px; }
+    .msg-row.other .msg-bubble { background: #fff; color: #333; border: 1px solid #e0e0e0; border-bottom-left-radius: 4px; }
+    .msg-time { font-size: 10px; color: #999; margin-top: 4px; display: flex; gap: 6px; align-items: center; }
+    .btn-delete-msg { background: none; border: none; color: #c62828; font-size: 10px; cursor: pointer; padding: 0; text-decoration: underline; font-family: inherit;}
+
+    .msg-system { align-self: center; background: #e0e0e0; color: #555; font-size: 11px; padding: 6px 14px; border-radius: 20px; text-align: center; max-width: 90%; word-break: keep-all; margin: 8px 0; font-weight: 600;}
+
+    .chat-input-area { padding: 16px 20px; background: #fff; border-top: 1px solid #f0f0f0; display: flex; gap: 10px; }
+    .chat-input { flex: 1; padding: 12px 16px; border: 1.5px solid #e0e0e0; border-radius: 24px; font-size: 14px; outline: none; }
+    .chat-input:focus { border-color: #2d5a27; }
+    .btn-send { background: #2d5a27; color: #fff; border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; }
+    
+    .btn-leave { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 12px; cursor: pointer; text-decoration: underline; margin-right: 12px; }
+    
+    .profile-modal { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .profile-card { background: #fff; width: 80%; border-radius: 16px; padding: 24px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+    .profile-icon { font-size: 48px; margin-bottom: 10px; }
+    .profile-name { font-size: 20px; font-weight: 700; color: #1a3a15; margin-bottom: 16px; }
+    .profile-stats { display: flex; justify-content: space-around; background: #f8fdf4; padding: 16px; border-radius: 12px; margin-bottom: 20px; }
+    .stat-col { display: flex; flex-direction: column; gap: 4px; }
+    .stat-val { font-size: 18px; font-weight: 800; color: #2d5a27; }
+    .stat-lbl { font-size: 12px; color: #666; }
+    .btn-modal-close { background: #e0e0e0; color: #333; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div onclick="document.getElementById('profileModal').style.display='flex'">
+        <div class="chat-title">
+            💬 <%= room.sharingPost.postTitle %>
+        </div>
+        <div class="chat-subtitle" style="font-size: 13px; color: #e8f5e0; margin-top:4px; font-weight:400;">
+            👤 <%= currentUser.memberId === room.sellerId ? room.buyer.memberName : room.seller.memberName %> <span style="font-size:12px; opacity:0.8;">(프로필 보기 ➔)</span>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center;">
+        <form action="/chat/room/<%= room.roomId %>/leave" method="POST" style="margin:0;" onsubmit="return confirm('채팅방을 나가시겠습니까?\n대화 내역이 삭제되고 다시 복구할 수 없습니다.');">
+          <button type="submit" class="btn-leave">나가기</button>
+        </form>
+        <a href="/sharing/<%= room.sharingId %>" class="btn-close">×</a>
+      </div>
+    </div>
+
+    <% if (currentUser.memberId === room.sellerId) { %>
+    <div class="action-bar" style="display:flex; justify-content:center; align-items:center; gap:12px;">
+        <% if (room.sharingPost.sharingStatus) { %>
+            <span class="status-badge" style="flex:1; text-align:center;">✅ 나눔 완료</span>
+            <button onclick="document.getElementById('reviewModal').style.display='flex'" style="background:#2980b9; color:#fff; border:none; padding:10px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer;">⭐ 후기 남기기</button>
+        <% } else if (currentUser.memberId === room.sellerId) { %>
+            <form action="/sharing/<%= room.sharingId %>/reserve" method="POST" style="margin:0; width:140px;">
+                <button type="submit" class="btn-action btn-reserve" style="width:100%;"><%= isReserved ? '예약 취소' : '예약중 설정' %></button>
+            </form>
+            <form action="/sharing/<%= room.sharingId %>/complete" method="POST" style="margin:0; width:140px;" onsubmit="return confirm('<%= partnerStats.partnerName %>님께 나눔을 완료하시겠습니까?');">
+                <input type="hidden" name="receiverId" value="<%= room.buyerId %>">
+                <button type="submit" class="btn-action btn-complete" style="width:100%;">🎉 나눔 완료</button>
+            </form>
+        <% } else if (isReserved) { %>
+            <span class="status-badge">⏳ 현재 예약중인 상품입니다</span>
+        <% } else { %>
+            <span class="status-badge">🤝 대화가 진행 중입니다</span>
+        <% } %>
+    </div>
+    <% } else if (room.sharingPost.sharingStatus) { %>
+    <div class="action-bar" style="display:flex; justify-content:center;"><span class="status-badge">✅ 나눔이 완료되었습니다</span></div>
+    <% } else if (isReserved) { %>
+    <div class="action-bar" style="display:flex; justify-content:center;"><span class="status-badge">⏳ 현재 예약중인 상품입니다</span></div>
+    <% } %>
+
+    <div class="chat-messages" id="chatBox">
+      <div style="text-align: center; margin: 10px 0 20px 0;">
+          <div style="display: inline-block; background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; padding: 12px 18px; border-radius: 12px; font-size: 12px; line-height: 1.5; font-weight: 500; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+              🤝 <b>FORESHY 매너 거래 가이드</b><br>
+              이웃을 향한 따뜻한 인사와 존중의 대화를 부탁드립니다.<br>
+              개인정보 요구나 부적절한 언행은 제재 대상이 될 수 있습니다.
+          </div>
+      </div>
+
+      <% messages.forEach(msg => { %>
+        <% if (msg.isSystem) { %>
+          <div class="msg-system"><%- msg.content %></div>
+        <% } else { %>
+          <div class="msg-row <%= msg.senderId === currentUser.memberId ? 'mine' : 'other' %>" id="msg-<%= msg.messageId %>">
+            <% if (msg.senderId !== currentUser.memberId) { %>
+              <div class="msg-sender"><%= msg.sender.memberName %></div>
+            <% } %>
+            <div class="msg-bubble"><%= msg.content %></div>
+            <div class="msg-time">
+              <%= new Date(msg.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) %>
+              <% if (msg.senderId === currentUser.memberId) { %>
+                <button type="button" class="btn-delete-msg" onclick="deleteMessage('<%= msg.messageId %>')">삭제</button>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+      <% }) %>
+    </div>
+
+    <div id="inputSection">
+      <% if (isOtherLeft) { %>
+        <div class="chat-input-area" style="justify-content:center; background:#f5f5f5;">
+          <span style="color:#999; font-size:13px; font-weight:600;">대화 상대가 채팅방을 나갔습니다.</span>
+        </div>
+      <% } else { %>
+        <div class="chat-input-area" id="chatForm">
+          <input type="text" id="chatInput" class="chat-input" placeholder="메시지 보내기..." autocomplete="off">
+          <button type="button" id="sendBtn" class="btn-send">➤</button>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-card">
+            <div class="profile-icon">👤</div>
+            <div class="profile-name"><%= partnerStats.partnerName %></div>
+            <div class="profile-stats">
+                <div class="stat-col">
+                    <span class="stat-val">⭐ <%= partnerStats.avgRating %></span>
+                    <span class="stat-lbl">평균 별점</span>
+                </div>
+                <div class="stat-col">
+                    <span class="stat-val">🤝 <%= partnerStats.completedShares %>건</span>
+                    <span class="stat-lbl">나눔 완료</span>
+                </div>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <a href="/sharing?memberId=<%= partnerStats.partnerId %>" style="font-size:13px; color:#2d5a27; font-weight:600; text-decoration:underline;">작성한 나눔글 보기</a>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <button onclick="reportAndBlockUser()" style="background:#fff; border:1px solid #e0e0e0; padding:6px 12px; border-radius:6px; font-size:11px; color:#c62828; cursor:pointer;">⚠️ 사용자 신고/자동차단</button>
+                
+            </div>
+            <button class="btn-modal-close" onclick="document.getElementById('profileModal').style.display='none'">닫기</button>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    //메시지 삭제
+    async function deleteMessage(messageId) {
+    if (!confirm('이 메시지를 삭제하시겠습니까?')) return;
+    
+    try {
+        const res = await fetch(`/chat/message/${messageId}/delete`, { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.message || '삭제에 실패했습니다.');
+        }
+    } catch (e) {
+        console.error(e);
+        alert('메시지 삭제 중 통신 에러가 발생했습니다.');
+    }
+    }
+
+    async function submitReview() {
+    const rating = document.getElementById('reviewRating').value;
+    const content = document.getElementById('reviewContent').value;
+    const revieweeId = currentUserId === '<%= room.sellerId %>' ? '<%= room.buyerId %>' : '<%= room.sellerId %>';
+
+    try {
+        const res = await fetch('/api/submit-review', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                sharingId: '<%= room.sharingId %>', 
+                revieweeId: revieweeId, 
+                rating: rating, 
+                content: content 
+            }) 
+        });
+        const data = await res.json();
+        
+        if(data.success) {
+            alert(data.message);
+            document.getElementById('reviewModal').style.display='none';
+        } else {
+            alert(data.message || '오류가 발생했습니다.');
+        }
+    } catch(e) {
+        console.error(e);
+        alert('후기 등록 중 에러가 발생했습니다.');
+    }
+    }
+  </script>
+
+  <script>
+    async function reportAndBlockUser() {
+    if (!confirm('이 사용자를 신고하고 즉시 차단하시겠습니까?\n차단 완료 시 상대방의 모든 나눔글이 보이지 않게 됩니다.')) return;
+    
+    try {
+        // 상대방 ID 추출 (currentUser 조건 반대 유저)
+        const blockedId = currentUserId === '<%= room.sellerId %>' ? '<%= room.buyerId %>' : '<%= room.sellerId %>';
+        
+        const res = await fetch('/sharing/report-user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ blockedId, roomId })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            alert(data.message);
+            location.href = '/sharing'; // 차단되었으므로 방을 탈출하고 메인으로 튕겨줌
+        }
+    } catch(e) {
+        alert('신고 처리 중 에러가 발생했습니다.');
+    }
+  }
+  </script>
+
+  <script>
+    let socket;
+    const roomId = '<%= room.roomId %>';
+    const currentUserId = '<%= currentUser.memberId %>';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof io === 'undefined') return alert('소켓 로드 실패');
+      
+      socket = io(); 
+      socket.emit('joinRoom', roomId);
+
+      const chatBox = document.getElementById('chatBox');
+      const chatForm = document.getElementById('chatForm');
+      const chatInput = document.getElementById('chatInput');
+      const inputSection = document.getElementById('inputSection');
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      if (chatForm) {
+      
+      const sendMsg = () => {
+        const content = chatInput.value.trim();
+        if (!content) return;
+
+        socket.emit('sendMessage', { roomId, senderId: currentUserId, content });
+        chatInput.value = '';
+        chatInput.focus();
+      };
+ 
+      document.getElementById('sendBtn').addEventListener('click', sendMsg);
+      
+      chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendMsg();
+        }
+      });
+      }
+
+      socket.on('newMessage', (msg) => {
+        if (msg.isSystem) {
+            const row = document.createElement('div');
+            row.className = 'msg-system';
+            row.innerHTML = msg.content;
+            chatBox.appendChild(row);
+        } else {
+            const isMine = String(msg.senderId) === String(currentUserId); 
+            const time = new Date(msg.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+            
+            const row = document.createElement('div');
+            row.className = `msg-row ${isMine ? 'mine' : 'other'}`;
+            row.id = `msg-${msg.messageId}`;
+            
+            let html = '';
+            if (!isMine) html += `<div class="msg-sender">${msg.senderName}</div>`;
+            html += `<div class="msg-bubble">${msg.content}</div>`;
+            html += `<div class="msg-time">${time}`;
+            if (isMine) html += `<button type="button" class="btn-delete-msg" onclick="deleteMessage('${msg.messageId}')">삭제</button>`;
+            html += `</div>`;
+            
+            row.innerHTML = html;
+            chatBox.appendChild(row);
+        }
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+
+      socket.on('userLeft', () => {
+         inputSection.innerHTML = '<div class="chat-input-area" style="justify-content:center; background:#f5f5f5;"><span style="color:#999; font-size:13px; font-weight:600;">대화 상대가 채팅방을 나갔습니다.</span></div>';
+      });
+
+      socket.on('messageDeleted', (messageId) => {
+          const el = document.getElementById('msg-' + messageId);
+          if (el) el.remove();
+      });
+    });
+  </script>
+  <div class="profile-modal" id="reviewModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999999; align-items:center; justify-content:center;">
+    <div class="profile-card" style="width: 90%; max-width: 360px; background: #fff; border-radius: 16px; padding: 24px; text-align: left;">
+        <h3 style="margin-top:0; color:#1a3a15;">⭐ 거래 후기 남기기</h3>
+        <div style="margin-bottom:16px;">
+            <label style="font-size:13px; font-weight:600; color:#555;">별점 (1~5)</label>
+            <input type="number" id="reviewRating" min="1" max="5" value="5" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; margin-top:6px;">
+        </div>
+        <div style="margin-bottom:20px;">
+            <label style="font-size:13px; font-weight:600; color:#555;">후기 내용</label>
+            <textarea id="reviewContent" rows="4" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; margin-top:6px; resize:none;" placeholder="따뜻한 거래 후기를 남겨주세요!"></textarea>
+        </div>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button type="button" onclick="document.getElementById('reviewModal').style.display='none'" style="padding:10px 16px; border:none; border-radius:8px; cursor:pointer; background:#f5f5f5;">취소</button>
+            <button type="button" onclick="submitReview()" style="background:#2d5a27; color:#fff; padding:10px 16px; border:none; border-radius:8px; cursor:pointer; font-weight:600;">등록</button>
+        </div>
+    </div>
+</div>
+
+<script>
+async function submitReview() {
+    const rating = document.getElementById('reviewRating').value;
+    const content = document.getElementById('reviewContent').value;
+    const revieweeId = currentUserId === '<%= room.sellerId %>' ? '<%= room.buyerId %>' : '<%= room.sellerId %>';
+    try {
+        const res = await fetch('/sharing/submit-review', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sharingId: '<%= room.sharingId %>', revieweeId, rating, content }) 
+        });
+        const data = await res.json();
+        if(data.success) {
+            alert(data.message);
+            document.getElementById('reviewModal').style.display='none';
+        } else {
+            alert('오류: ' + data.message);
+        }
+    } catch(e) { 
+        alert('에러가 발생했습니다.'); 
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> - FORESHY</title>
+  <link rel="icon" href="/images/favicon.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/park.css">
+  <%- style %>
+</head>
+<body class="park-body">
+  <% if (success && success.length > 0) { %>
+    <div class="flash flash-success park-flash"><%= success[0] %></div>
+  <% } %>
+  <% if (error && error.length > 0) { %>
+    <div class="flash flash-error park-flash"><%= error[0] %></div>
+  <% } %>
+
+  <%- body %>
+
+  <script src="/js/main.js"></script>
+  <script src="/js/park.js"></script>
+  <%- script %>
+</body>
+</html>

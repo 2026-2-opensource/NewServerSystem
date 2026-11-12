@@ -1,0 +1,211 @@
+<link href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@300;400;700&family=Jua&display=swap" rel="stylesheet">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+.landing { font-family:'TMoneyDungunbaram', 'Noto Sans KR', sans-serif; font-weight:normal; }
+
+/* 네비 */
+.landing-nav { display:flex; align-items:center; justify-content:space-between; padding:18px 60px; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.06); position:sticky; top:0; z-index:100; }
+.landing-logo { display:flex; align-items:center; gap:8px; font-weight:800; font-size:18px; color:#2d5a27; text-decoration:none; }
+.nav-links { display:flex; align-items:center; gap:32px; }
+.nav-links a { color:#555; text-decoration:none; font-size:14px; }
+.nav-links a:hover { color:#2d5a27; }
+.btn-outline { border:1.5px solid #2d5a27; color:#2d5a27 !important; padding:9px 22px; border-radius:10px; font-weight:600; }
+.btn-fill { background:#2d5a27; color:#fff !important; padding:9px 22px; border-radius:10px; font-weight:600; }
+
+/* 히어로 */
+.hero { display:grid; grid-template-columns:1fr 1fr; min-height:85vh; align-items:center; padding:0 60px; background:linear-gradient(135deg,#f4faf0 0%,#e8f5e0 100%); gap:60px; }
+.hero-content { }
+.hero-tag { display:inline-block; background:#d4edda; color:#2d5a27; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; margin-bottom:20px; }
+.hero-title { font-size:44px; font-weight:800; line-height:1.3; color:#1a3a15; margin-bottom:20px; }
+.hero-title em { color:#2d7a20; font-style:normal; }
+.hero-desc { font-size:15px; color:#5a7a54; line-height:1.7; margin-bottom:36px; }
+.hero-btns { display:flex; gap:14px; }
+.btn-hero-primary { background:#2d5a27; color:#fff; padding:15px 32px; border-radius:12px; text-decoration:none; font-weight:700; font-size:15px; }
+.btn-hero-secondary { background:#fff; color:#2d5a27; padding:15px 32px; border-radius:12px; text-decoration:none; font-weight:700; font-size:15px; border:2px solid #2d5a27; }
+.hero-visual { background:#fff; border-radius:24px; padding:24px; box-shadow:0 8px 40px rgba(0,0,0,.1); }
+.hero-park-preview { background:linear-gradient(to bottom, #87CEEB 0%, #87CEEB 40%, #5CAD4A 40%); border-radius:16px; height:300px; position:relative; overflow:hidden; display:flex; align-items:flex-end; justify-content:center; padding-bottom:40px; }
+.park-items-preview { display:flex; gap:20px; font-size:44px; }
+
+/* 서비스 소개 섹션 */
+.section { padding:80px 60px; }
+.section-alt { background:#f8fdf4; }
+.section-title { font-size:30px; font-weight:800; color:#1a3a15; text-align:center; margin-bottom:12px; }
+.section-sub { font-size:15px; color:#888; text-align:center; margin-bottom:48px; }
+
+/* 스텝 카드 */
+.steps-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+.step-card { background:#fff; border-radius:20px; padding:32px 24px; text-align:center; box-shadow:0 2px 16px rgba(0,0,0,.06); }
+.step-num { font-size:12px; font-weight:700; color:#2d5a27; margin-bottom:16px; }
+.step-icon-big { font-size:48px; margin-bottom:16px; display:block; width:80px; height:80px; object-fit:contain; margin-left:auto; margin-right:auto; }
+.step-card-title { font-size:16px; font-weight:700; color:#222; margin-bottom:8px; }
+.step-card-desc { font-size:13px; color:#888; line-height:1.6; }
+
+/* 특징 섹션 */
+.features-grid { display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:center; }
+.feature-text { }
+.feature-title { font-size:28px; font-weight:800; color:#1a3a15; margin-bottom:16px; line-height:1.4; }
+.feature-desc { font-size:15px; color:#666; line-height:1.7; margin-bottom:24px; }
+.feature-list { list-style:none; }
+.feature-list li { display:flex; align-items:center; gap:10px; font-size:14px; color:#555; margin-bottom:10px; }
+.feature-list li::before { content:'✓'; color:#2d5a27; font-weight:700; }
+.feature-visual { background:linear-gradient(135deg,#e8f5e0,#c8e6b8); border-radius:20px; padding:32px; text-align:center; font-size:80px; min-height:200px; display:flex; align-items:center; justify-content:center; }
+
+/* CTA */
+.cta-section { background:#2d5a27; padding:80px 60px; text-align:center; color:#fff; }
+.cta-title { font-size:32px; font-weight:800; margin-bottom:14px; }
+.cta-desc { font-size:15px; opacity:0.85; margin-bottom:36px; }
+.btn-cta { background:#fff; color:#2d5a27; padding:16px 40px; border-radius:14px; text-decoration:none; font-weight:800; font-size:16px; display:inline-block; }
+</style>
+
+<div class="landing">
+  <nav class="landing-nav">
+    <a href="/" class="landing-logo"><img src="/images/logo.png" style="height:55px;object-fit:contain;margin-left:-30px;"></a>
+    <div class="nav-links">
+      <a href="#service">서비스 소개</a>
+      <a href="#how">이용 방법</a>
+      <a href="/auth/login" class="btn-outline">로그인</a>
+      <a href="/auth/register" class="btn-fill">회원가입</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-tag">🌱 냉장고 관리에서 식재료 나눔까지</div>
+      <h1 class="hero-title" style="font-family:'Jua',sans-serif;letter-spacing:1px;opacity:0.8;">
+        오늘의 작은 <em>나눔</em>이<br>
+        내일의 아름다운 <em>공원</em>이 돼요
+      </h1>
+      <p class="hero-desc">
+        식재료를 관리하고, 이웃과 나누고,<br>
+        나만의 공원을 꾸며보세요 🌿
+      </p>
+      <div class="hero-btns">
+        <a href="/auth/register" class="btn-hero-primary">시작하기</a>
+        <a href="#service" class="btn-hero-secondary">서비스 둘러보기</a>
+      </div>
+    </div>
+    <div class="hero-visual" style="padding:0;overflow:hidden;border-radius:24px;position:relative;">
+      <div style="position:relative;width:100%;height:300px;overflow:hidden;border-radius:24px;">
+        <img id="heroSlide0" src="/images/landing/landing_pro1.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:1;transition:opacity 0.8s ease;">
+        <img id="heroSlide1" src="/images/landing/landing_pro2.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.8s ease;">
+        <img id="heroSlide2" src="/images/landing/landing_pro3.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.8s ease;">
+        <img id="heroSlide3" src="/images/landing/landing_pro4.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.8s ease;">
+      </div>
+      <div id="heroDots" style="display:flex;justify-content:center;gap:8px;padding:12px 0;background:#fff;">
+        <span class="hero-dot active" onclick="goHeroSlide(0)" style="width:10px;height:10px;border-radius:50%;background:#2d5a27;cursor:pointer;transition:background 0.3s;display:inline-block;"></span>
+        <span class="hero-dot" onclick="goHeroSlide(1)" style="width:10px;height:10px;border-radius:50%;background:#ccc;cursor:pointer;transition:background 0.3s;display:inline-block;"></span>
+        <span class="hero-dot" onclick="goHeroSlide(2)" style="width:10px;height:10px;border-radius:50%;background:#ccc;cursor:pointer;transition:background 0.3s;display:inline-block;"></span>
+        <span class="hero-dot" onclick="goHeroSlide(3)" style="width:10px;height:10px;border-radius:50%;background:#ccc;cursor:pointer;transition:background 0.3s;display:inline-block;"></span>
+      </div>
+    </div>
+
+    <script>
+      (function() {
+        const slides = [0,1,2,3].map(i => document.getElementById('heroSlide'+i));
+        const dots = document.querySelectorAll('.hero-dot');
+        let cur = 0;
+
+        function goHeroSlide(n) {
+          slides[cur].style.opacity = '0';
+          dots[cur].style.background = '#ccc';
+          cur = n;
+          slides[cur].style.opacity = '1';
+          dots[cur].style.background = '#2d5a27';
+        }
+
+        window.goHeroSlide = goHeroSlide;
+
+        setInterval(() => {
+          goHeroSlide((cur + 1) % slides.length);
+        }, 3000);
+      })();
+    </script>
+  </section>
+
+  <section class="section" id="service">
+    <h2 class="section-title" style="font-family:'Jua',sans-serif;letter-spacing:1px;font-size:30px;opacity:0.8;">포레시의 특징</h2>
+    <p class="section-sub">냉장고 관리부터 동네 나눔까지, 환경도 지키고 이웃도 만나요</p>
+    <div class="features-grid">
+      <div class="feature-text">
+        <h3 class="feature-title" style="font-family:'Jua',sans-serif;letter-spacing:1px;font-size:26px;opacity:0.8;"><img src="/images/character/front.png" style="height:44px;vertical-align:middle;margin-right:8px;position:relative;top:-6px;">똑똑한 냉장고 관리로 음식 낭비를 줄여요</h3>
+        <p class="feature-desc">유통기한이 임박한 식재료를 미리 파악하고 <br> 소비하지 못할 것 같으면 이웃과 나눌 수 있어요.</p>
+        <ul class="feature-list">
+          <li>예상 유통기한 제공</li>
+          <li>카테고리별 식재료 관리</li>
+          <li>냉장고 관리부터 나눔 등록까지 손쉽게</li>
+        </ul>
+      </div>
+      <div class="feature-visual" style="padding:0;overflow:hidden;border-radius:20px;">
+  <video autoplay loop muted playsinline style="width:100%;height:100%;object-fit:cover;border-radius:20px;display:block;">
+    <source src="/images/landing/landing_pro_fridge.mp4" type="video/mp4">
+  </video>
+</div>
+    </div>
+    <div class="features-grid" style="margin-top:60px;">
+      <div class="feature-visual" style="position:relative;overflow:hidden;border-radius:20px;min-height:350px;padding:0;">
+        <img id="parkSlide0" src="/images/landing/landing_park1.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;border-radius:20px;opacity:1;transition:opacity 1s ease;">
+        <img id="parkSlide1" src="/images/landing/landing_park2.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;border-radius:20px;opacity:0;transition:opacity 1s ease;">
+        <img id="parkSlide2" src="/images/landing/landing_park3.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;border-radius:20px;opacity:0;transition:opacity 1s ease;">
+        <img id="parkSlide3" src="/images/landing/landing_park.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;border-radius:20px;opacity:0;transition:opacity 1s ease;">
+      </div>
+      <script>
+        (function() {
+          const slides = [0,1,2,3].map(i => document.getElementById('parkSlide'+i));
+          let cur = 0;
+          setInterval(() => {
+            slides[cur].style.opacity = '0';
+            cur = (cur + 1) % slides.length;
+            slides[cur].style.opacity = '1';
+          }, 1500);
+        })();
+      </script>
+      <div class="feature-text">
+        <h3 class="feature-title" style="font-family:'Jua',sans-serif;letter-spacing:1px;font-size:26px;opacity:0.8;"><img src="/images/character/front.png" style="height:44px;vertical-align:middle;margin-right:8px;position:relative;top:-6px;">나눔할수록 자라는 나만의 공원</h3>
+        <p class="feature-desc">식재료를 나누거나 소비할 때마다 공원 꾸미기 아이템을 획득해요. <br> 꽃, 나무, 벤치 등 다양한 아이템으로 나만의 공원을 완성하세요.</p>
+        <ul class="feature-list">
+          <li>나눔 완료 시 랜덤 아이템 획득</li>
+          <li>30가지 다양한 공원 아이템</li>
+          <li>자유로운 공원 배치</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt" id="how">
+    <h2 class="section-title" style="font-family:'Jua',sans-serif;letter-spacing:1px;opacity:0.8;">이렇게 이용하세요</h2>
+    <p class="section-sub">간단한 4단계로 냉장고를 관리하고 공원을 꾸밀 수 있어요</p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <img class="step-icon-big" src="/images/character/manage.png" style="height:60px;object-fit:contain;">
+        <div class="step-card-title">냉장고 관리</div>
+        <div class="step-card-desc">유통기한을 등록하고 냉장고 속 식재료를 신선하게 관리해요</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <img class="step-icon-big" src="/images/character/share.png" style="height:60px;object-fit:contain;">
+        <div class="step-card-title">나눔하기</div>
+        <div class="step-card-desc">이웃과 식재료를 나눠요</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <img class="step-icon-big" src="/images/character/complete.png" style="height:60px;object-fit:contain;">
+        <div class="step-card-title">나눔 완료</div>
+        <div class="step-card-desc">나눔이 완료되면 보상으로 공원 꾸미기 아이템을 받아요</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <img class="step-icon-big" src="/images/character/park.png" style="height:60px;object-fit:contain;">
+        <div class="step-card-title">공원 꾸미기</div>
+        <div class="step-card-desc">보상으로 나만의 공원을 꾸며요</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section" id="community">
+    <h2 class="cta-title">지금 바로 시작해보세요 🌿</h2>
+    <p class="cta-desc">우리 동네 이웃과 함께 음식 낭비를 줄이고 아름다운 공원을 만들어요</p>
+    <a href="/auth/register" class="btn-cta">지금 시작하기</a>
+  </section>
+</div>

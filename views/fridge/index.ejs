@@ -1,0 +1,1197 @@
+
+<style>
+.page-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.page-title{font-size:22px;font-weight:700;color:#1a3a15;}
+.btn-primary{background:#2d5a27;color:#fff;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;border:none;cursor:pointer;}
+.filter-tabs{display:flex;gap:6px;margin-bottom:20px;}
+.filter-tab{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;text-decoration:none;color:#888;background:#fff;border:1.5px solid #e0e0e0;}
+.filter-tab.active{background:#2d5a27;color:#fff;border-color:#2d5a27;}
+.fridge-table{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+
+.fridge-table{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.table-header{display:grid;grid-template-columns:36px 44px 1fr 110px 70px 90px 80px 180px;padding:12px 20px;background:#f8fdf4;border-bottom:1px solid #eee;}
+.table-header span{font-size:12px;font-weight:600;color:#888;}
+.table-row{display:grid;grid-template-columns:36px 44px 1fr 110px 70px 90px 80px 180px;padding:12px 20px;border-bottom:1px solid #f5f5f5;align-items:center;}
+
+/* 🔥 나눔중(sharing-mode)일 때는 가격 열(80px)을 지운 7열 레이아웃으로 작동하게 만듭니다 */
+.sharing-mode .table-header,
+.sharing-mode .table-row {
+  grid-template-columns: 36px 44px 1fr 110px 70px 90px 180px;
+}
+.table-row:hover{background:#fafffe;}
+.item-icon{font-size:22px;}
+.item-name{font-size:14px;font-weight:600;color:#222;}
+.item-sub{font-size:11px;color:#aaa;margin-top:2px;}
+.expiry-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;}
+.badge-expired{background:#ffe8e8;color:#c0392b;}
+.badge-today{background:#fff3e0;color:#ed7308;}
+.badge-urgent{background:#fff8e1;color:#f39c12;}
+.badge-soon{background:#e8f5e0;color:#27ae60;}
+.badge-safe{background:#e8f5fe;color:#2980b9;}
+.storage-tag{font-size:11px;color:#888;background:#f5f5f5;padding:3px 8px;border-radius:6px;}
+.table-actions{ display:grid;
+  grid-template-columns: repeat(2, 70px);
+  gap:6px;
+  justify-content:center;
+   align-items:center;
+}
+.table-actions form{
+  margin:0;
+  padding:0;
+}
+.btn-consume{background:#27ae60;color:#fff;border:none;padding:5px 10px;border-radius:8px;font-size:11px;cursor:pointer;font-weight:600;}
+.btn-discard{background:#fff;color:#e74c3c;border:1.5px solid #eee;padding:5px 8px;border-radius:8px;font-size:11px;cursor:pointer;}
+.btn-share{background:#2d5a27;color:#fff;border:none;padding:5px 8px;border-radius:8px;font-size:11px;cursor:pointer;}
+.btn-edit{
+  background:#f3f4f6;
+  color:#333;
+  border:none;
+  padding:5px 10px;
+  border-radius:8px;
+  font-size:11px;
+  cursor:pointer;
+  font-weight:600;
+}
+.table-actions{
+  display:grid;
+  grid-template-columns: repeat(2, 70px);
+  gap:6px;
+  justify-content:center;
+}
+
+/* 모든 버튼 공통 크기 */
+.btn-consume,
+.btn-share,
+.btn-discard,
+.btn-edit{
+  width:70px;
+  height:38px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:0;
+  font-size:12px;
+  font-weight:600;
+
+  border-radius:10px;
+  box-sizing:border-box;
+}
+
+.btn-delete{background:#fff;color:#aaa;border:1.5px solid #eee;padding:5px 8px;border-radius:8px;font-size:11px;cursor:pointer;}
+.empty-table{text-align:center;padding:60px;color:#bbb;font-size:14px;}
+.btn-bulk-delete{
+  background:#e74c3c;
+  color:#fff;
+  border:none;
+  padding:10px 16px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  pointer-events:auto;
+  opacity:1;
+}
+
+.btn-bulk-delete:hover{
+  opacity:0.9;
+}
+.btn-delete-expired{
+  background:#c0392b;   /* 더 진한 레드 */
+  color:#fff;
+  border:none;
+  padding:10px 16px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-expired:hover{
+  background:#922b21;   /* hover 더 어둡게 */
+  transform: translateY(-1px);
+}
+.page-title-row{
+  position:relative;
+  z-index:10;
+}
+.item-checkbox{
+  width:16px;
+  height:16px;
+  cursor:pointer;
+}
+
+#checkAll{
+  width:16px;
+  height:16px;
+  cursor:pointer;
+}
+
+/* 모달 */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:20px;width:520px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 12px 48px rgba(0,0,0,.15);}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:24px 28px 16px;}
+.modal-title{font-size:18px;font-weight:700;color:#1a3a15;}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:#aaa;}
+.modal-body{overflow-y:auto;padding:0 28px 20px;}
+.modal-footer{padding:16px 28px 24px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid #f0f0f0;}
+.modal-btn-cancel{background:#fff;color:#888;border:1.5px solid #e0e0e0;padding:11px 20px;border-radius:10px;cursor:pointer;font-size:14px;font-family:inherit;}
+.modal-btn-submit{background:#2d5a27;color:#fff;border:none;padding:11px 24px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;font-family:inherit;}
+
+/* 입력 폼 */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-group.full{grid-column:span 2;}
+.modal-label{display:block;font-size:12px;color:#666;margin-bottom:6px;font-weight:600;}
+.modal-input{width:100%;padding:11px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:14px;box-sizing:border-box;font-family:inherit;background:#fafafa;}
+.modal-input:focus{outline:none;border-color:#2d5a27;background:#fff;}
+.auto-filled{border-color:#27ae60 !important;background:#f0fff4 !important;}
+
+/* 자동입력 결과 카드 */
+.analyze-result{background:#f8fdf4;border:1.5px solid #c8e6b8;border-radius:12px;padding:14px;margin-bottom:16px;display:none;}
+.analyze-result.show{display:block;}
+.result-row{display:flex;align-items:center;gap:8px;font-size:13px;color:#444;margin-bottom:6px;}
+.result-row:last-child{margin-bottom:0;}
+.result-icon{font-size:16px;width:20px;}
+.result-label{color:#888;font-size:12px;width:60px;}
+.result-value{font-weight:600;color:#2d5a27;}
+.tip-text{font-size:11px;color:#888;margin-top:8px;padding-top:8px;border-top:1px solid #ddd;}
+
+/* 방식 선택 모달 스타일 */
+.choice-modal { width: 380px !important; }
+.choice-body { display: flex; flex-direction: column; gap: 12px; padding: 10px 28px 28px !important; }
+.btn-choice-option {
+  display: flex; align-items: center; width: 100%; padding: 16px;
+  background: #fafafa; border: 1.5px solid #e0e0e0; border-radius: 14px;
+  cursor: pointer; transition: all 0.2s ease; text-align: left; font-family: inherit;
+}
+.btn-choice-option:hover { background: #f0fff4; border-color: #2d5a27; transform: translateY(-2px); }
+.choice-icon { font-size: 26px; margin-right: 16px; display: flex; align-items: center; justify-content: center; }
+.choice-text { display: flex; flex-direction: column; }
+.choice-title { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 2px; }
+.choice-desc { font-size: 11px; color: #888; line-height: 1.4; }
+
+/* 영수증 처리중 스피너 오버레이 */
+.loading-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.85); 
+  z-index: 2000; flex-direction: column; align-items: center; justify-content: center; gap: 15px;
+}
+.loading-overlay.show { display: flex; }
+.ocr-spinner {
+  width: 40px; height: 40px; border: 4px solid rgba(45,90,39,0.2); border-top-color: #2d5a27;
+  border-radius: 50%; animation: ocr-spin 1s linear infinite;
+}
+
+/* 자동입력 결과 카드 통합형 스타일 */
+.analyze-result {
+  background: #f8fdf4;
+  border: 1.5px solid #c8e6b8;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: none;
+}
+.analyze-result.show { display: block; }
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.result-row:last-child { margin-bottom: 0; }
+.result-icon { font-size: 16px; width: 20px; text-align: center; }
+.result-label { color: #555; font-size: 12px; width: 65px; font-weight: 600; }
+
+/* 카드 내부 전용 미니 인풋/셀렉트 박스  */
+.inline-modify-input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #c8e6b8;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  background: #fff;
+  color: #2d5a27;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+.inline-modify-input:focus {
+  outline: none;
+  border-color: #2d5a27;
+  box-shadow: 0 0 4px rgba(45,90,39,0.15);
+}
+@keyframes ocr-spin { to { transform: rotate(360deg); } }
+</style>
+
+<div id="jsFlash" style="display:none;background:#f0fff4;color:#27ae60;border:1px solid #b2dfdb;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;margin-bottom:16px;"></div>
+
+<div class="page-title-row">
+  <h2 class="page-title">내 냉장고</h2>
+
+  <div style="display:flex; gap:10px;">
+    <button
+      type="button"
+      class="btn-primary btn-delete-expired"
+      id="deleteExpiredBtn"
+    >
+    만료된 식재료 삭제
+    </button>
+
+    <button 
+      type="button"
+      class="btn-delete btn-bulk-delete"
+      id="deleteSelectedBtn"
+    >
+      선택 삭제
+    </button>
+
+    <button class="btn-primary" onclick="openChoiceModal()">
+      + 식재료 추가
+    </button>
+  </div>
+</div>
+
+<div class="filter-tabs">
+  <a href="/fridge?filter=all" class="filter-tab <%= filter==='all'?'active':'' %>">전체 (<%= counts.all %>)</a>
+  <a href="/fridge?filter=today" class="filter-tab <%= filter==='today'?'active':'' %>">오늘까지 (<%= counts.today %>)</a>
+  <a href="/fridge?filter=3days" class="filter-tab <%= filter==='3days'?'active':'' %>">3일 이내 (<%= counts.days3 %>)</a>
+  <a href="/fridge?filter=week" class="filter-tab <%= filter==='week'?'active':'' %>">일주일 이내 (<%= counts.week %>)</a>
+  <a href="/fridge?filter=safe" class="filter-tab <%= filter==='safe'?'active':'' %>">안전 (<%= counts.safe %>)</a>
+  
+  <a href="/fridge?filter=sharing" class="filter-tab <%= filter==='sharing'?'active':'' %>">나눔중 (<%= counts.sharing %>)</a>
+</div>
+
+<div class="fridge-table <%= filter === 'sharing' ? 'sharing-mode' : '' %>">
+  <div class="table-header">
+    <span>
+      <input type="checkbox" id="checkAll">
+    </span>
+    <span></span><span>식재료</span><span>권장소비기한</span><span>상태</span><span>보관위치</span>
+    
+    <% if (filter !== 'sharing') { %>
+      <span>가격</span>
+    <% } %>
+    
+    <span>관리</span>
+  </div>
+  
+  <% if(items.length===0){ %>
+    <div class="empty-table">🥬 등록된 식재료가 없어요!</div>
+  <% } %>
+
+  <% items.forEach(item=>{ %>
+    <% if ((filter === 'today' || filter === '3days') && item.status === 'expired') {
+        return; 
+      } 
+    %>
+    
+    <div class="table-row">
+       <div>
+        <input
+          type="checkbox"
+          class="item-checkbox"
+          value="<%= item.ownedIngredientId %>"
+        >
+      </div>
+      <input type="number" id="consumeInput" style="display:none;">
+
+      <div class="item-icon"><%= getCategoryEmoji(item.categoryInfo) %></div>
+      
+      <div>
+        <div class="item-name"><%= item.ingredientName||'알 수 없음' %></div>
+        <div class="item-sub">
+          <%= item.fridge ? item.fridge.fridgeName : '' %>
+          <% if (item.quantity) { %>
+            · <%= String(item.quantity).replace(/NaN/g, '') %>
+          <% } %>
+        </div>
+      </div>
+      
+      <div style="font-size:13px;color:#555;"><%= new Date(item.expiryDate).toLocaleDateString('ko-KR') %></div>
+      <div>
+        <% if (item.status === 'today') { %>
+          <span class="expiry-badge badge-today">D-Day</span>
+        <% } else if (item.status === 'expired') { %>
+          <span class="expiry-badge badge-expired">만료</span>
+        <% } else { %>
+          <span class="expiry-badge badge-<%= item.status %>">D-<%= item.daysLeft %></span>
+        <% } %>
+      </div>
+      <div><span class="storage-tag"><%= item.storageMethod||'냉장실' %></span></div>
+      
+      <% if (filter !== 'sharing') { %>
+        <div style="font-size:12px;color:#555;"><% if(item.amount){ %><%= parseInt(item.amount).toLocaleString() %>원<% } else { %>-<% } %></div>
+      <% } %>
+      
+     <div class="table-actions">
+
+  <button
+    type="button"
+    class="btn-consume"
+    data-id="<%= item.ownedIngredientId %>"
+    data-quantity="<%= item.quantity %>">
+    ✅ 소비
+  </button>
+
+  <% if(!item.isSharing){ %>
+    <button
+      type="button"
+      class="btn-share"
+      onclick="location.href='/sharing?autoSelect=<%= item.ownedIngredientId %>'">
+      나눔
+    </button>
+  <% } else { %>
+    <span style="font-size:11px;color:#2d5a27;font-weight:600;">나눔중</span>
+  <% } %>
+
+  <form
+    action="/fridge/<%= item.ownedIngredientId %>/delete"
+    method="POST"
+    style="margin:0"
+    onsubmit="return deleteConfirm(event,this)">
+    <button type="submit" class="btn-discard">🗑 폐기</button>
+  </form>
+
+  <button
+    type="button"
+    class="btn-edit"
+    onclick="openEditModal(
+      '<%= item.ownedIngredientId %>',
+      '<%= item.ingredientName %>',
+      '<%= item.quantity %>',
+      '<%= new Date(item.expiryDate).toISOString().slice(0, 10) %>',
+      '<%= item.storageMethod %>',
+      '<%= item.categoryInfo %>',
+      '<%= item.amount %>'
+    )">
+    수정
+  </button>
+
+</div>
+    </div>
+  <% }) %>
+</div>
+
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✏️ 식재료 수정</div>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <form id="editForm">
+        <input type="hidden" id="editId">
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="modal-label">식재료명</label>
+            <input type="text" id="editName" class="modal-input">
+          </div>
+
+          <div class="form-group full">
+            <label class="modal-label">수량</label>
+            <input type="text" id="editQuantity" class="modal-input">
+          </div>
+
+          <div class="form-group full">
+            <label class="modal-label">유통기한</label>
+            <input type="date" id="editExpiry" class="modal-input">
+          </div>
+
+          <div class="form-group full">
+            <label class="modal-label">보관방법</label>
+            <select id="editStorage" class="modal-input">
+              <option value="냉장실">냉장실</option>
+              <option value="냉동실">냉동실</option>
+              <option value="실온">실온</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label class="modal-label">카테고리</label>
+            <select id="editCategory" class="modal-input">
+              <option value="채소">🥬 채소</option>
+              <option value="과일">🍎 과일</option>
+              <option value="육류">🥩 육류</option>
+              <option value="해산물">🐟 해산물</option>
+              <option value="유제품">🥛 유제품</option>
+              <option value="냉동식품">🧊 냉동식품</option>
+              <option value="기타">🍽️ 기타</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label class="modal-label">금액</label>
+            <input type="number" id="editAmount" class="modal-input">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="modal-btn-cancel" onclick="closeEditModal()">취소</button>
+          <button type="button" class="modal-btn-submit" onclick="submitEdit()">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addChoiceModal">
+  <div class="modal choice-modal">
+    <div class="modal-header">
+      <div class="modal-title">🍏 식재료 추가 방식</div>
+      <button class="modal-close" onclick="closeChoiceModal()">✕</button>
+    </div>
+    <div class="modal-body choice-body">
+      <button type="button" class="btn-choice-option" onclick="selectDirectInput()">
+        <div class="choice-icon">✍️</div>
+        <div class="choice-text">
+          <span class="choice-title">직접 입력하기</span>
+          <span class="choice-desc">식재료 명과 유통기한을 내가 직접 타이핑합니다.</span>
+        </div>
+      </button>
+      <button type="button" class="btn-choice-option" onclick="selectReceiptInput()">
+        <div class="choice-icon">🧾</div>
+        <div class="choice-text">
+          <span class="choice-title">영수증 첨부하기</span>
+          <span class="choice-desc">마트 영수증 사진을 올려 여러 재료를 자동 분석합니다.</span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="receiptFileInput" accept="image/*" style="display:none;" onchange="handleReceiptUpload(this)">
+
+<div class="loading-overlay" id="ocrLoading">
+  <div class="ocr-spinner"></div>
+  <div style="font-weight:600;color:#2d5a27;font-size:14px;">영수증 글자를 읽어 분석하고 있어요...</div>
+</div>
+
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🥕 식재료 추가</div>
+      <button class="modal-close" onclick="closeAddModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <form action="/fridge/add" method="POST" id="addForm">
+        <input type="hidden" name="fridgeId" value="<%= fridges[0]?fridges[0].fridgeId:'' %>">
+        <input type="hidden" name="isEstimatedPrice" id="isEstimatedPrice" value="false">
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="modal-label">식재료 이름 *</label>
+            <input type="text" name="ingredientName" id="ingredientName" class="modal-input" placeholder="예: 우유, 닭가슴살, 브로콜리" required>
+          </div>
+          <div class="form-group full">
+            <label class="modal-label">수량 / 무게</label>
+            <input type="text" name="quantity" id="quantity" class="modal-input" placeholder="예: 1개, 500g, 1L, 2팩">
+          </div>
+        </div>
+
+        <div class="analyze-result" id="analyzeResult">
+          <div class="result-row">
+            <span class="result-icon">📂</span>
+            <span class="result-label" style="color: #555; font-size: 12px; width: 65px; font-weight: 600;">카테고리</span>
+            <select name="categoryInfo" id="categoryInfo" class="modal-input" style="flex: 1; padding: 6px 10px; border: 1px solid #c8e6b8; border-radius: 8px; font-size: 13px; background: #fff; color: #2d5a27; font-weight: 600; height: auto; margin: 0;">
+              <option value="채소">채소</option>
+              <option value="과일">과일</option>
+              <option value="육류">육류</option>
+              <option value="수산물">수산물</option>
+              <option value="유제품">유제품</option>
+              <option value="달걀">달걀</option>
+              <option value="가공식품">가공식품</option>
+              <option value="조미료">조미료</option>
+              <option value="냉동식품">냉동식품</option>
+              <option value="기타" selected>기타</option>
+            </select>
+          </div>
+
+          <div class="result-row">
+            <span class="result-icon">📅</span>
+            <span class="result-label" style="color: #555; font-size: 11px; width: 65px; font-weight: 600;">권장소비기한</span>
+            <input type="date" name="expiryDate" id="expiryDate" class="modal-input" style="flex: 1; padding: 6px 10px; border: 1px solid #c8e6b8; border-radius: 8px; font-size: 13px; background: #fff; color: #2d5a27; font-weight: 600; height: auto; margin: 0;" required>
+          </div>
+          
+          <div class="result-row">
+            <span class="result-icon">🏠</span>
+            <span class="result-label" style="color: #555; font-size: 12px; width: 65px; font-weight: 600;">보관방법</span>
+            <select name="storageMethod" id="storageMethod" class="modal-input" style="flex: 1; padding: 6px 10px; border: 1px solid #c8e6b8; border-radius: 8px; font-size: 13px; background: #fff; color: #2d5a27; font-weight: 600; height: auto; margin: 0;">
+              <option value="냉장실">냉장실</option>
+              <option value="냉동실">냉동실</option>
+              <option value="실온">실온</option>
+            </select>
+          </div>
+          
+          <div class="tip-text" id="r-tip"></div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="modal-label">가격 (원) <span id="priceEstLabel" style="display:none;font-size:10px;color:#e67e22;background:#fff3e0;padding:2px 6px;border-radius:6px;margin-left:4px;">예상가격</span></label>
+            <input type="number" name="amount" id="priceInput" class="modal-input" placeholder="0">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="modal-btn-cancel" onclick="closeAddModal()">취소</button>
+      <button type="button" class="modal-btn-submit" onclick="submitDirectAddForm()">추가하기</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="ocrResultModal">
+  <div class="modal" style="width: 640px;">
+    <div class="modal-header">
+      <div class="modal-title">🧾 영수증 인식 결과 확인</div>
+      <button class="modal-close" onclick="closeOcrResultModal()">✕</button>
+    </div>
+    <div class="modal-body" style="max-height: 55vh; overflow-y: auto; padding: 0 20px 20px;">
+      <p style="font-size: 12px; color: #666; margin-bottom: 12px; padding-left: 4px;">
+        💡 시스템이 추정한 정보입니다. 식재료명, 수량, 카테고리, 보관방법, 가격, 유통기한을 확인 및 수정 후 등록하세요.
+      </p>
+      
+      <div style="display: flex; gap: 6px; padding: 0 38px 6px 4px; border-bottom: 1px solid #eee; margin-bottom: 10px; font-size: 11px; font-weight: 600; color: #888; text-align: center;">
+        <span style="flex: 1.5; text-align: left;">식재료명</span>
+        <span style="flex: 0.6;">수량</span>
+        <span style="flex: 1.0;">카테고리</span>
+        <span style="flex: 1.0;">보관방법</span>
+        <span style="flex: 1.0; color: #2d5a27;">가격(원)</span>
+        <span style="flex: 1.4;">유통기한</span>
+      </div>
+
+      <div id="ocrIngredientsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="modal-btn-cancel" onclick="closeOcrResultModal()">취소</button>
+      <button type="button" class="modal-btn-submit" onclick="submitOcrIngredients()">냉장고에 넣기</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="width:400px;">
+    <div class="modal-header">
+      <div class="modal-title" id="confirmTitle">🗑 삭제 확인</div>
+    </div>
+
+    <div class="modal-body">
+      <p id="confirmMessage"></p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" id="confirmCancel">취소</button>
+      <button class="modal-btn-submit" id="confirmOk">확인</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="consumeModal">
+  <div class="modal" style="width:400px;">
+    <div class="modal-header">
+      <div class="modal-title">✅ 부분 소비</div>
+    </div>
+
+    <div class="modal-body">
+      <p id="consumeMessage"></p>
+
+      <input
+        type="number"
+        id="consumeAmountInput"
+        class="modal-input"
+        min="1"
+        placeholder="소비할 수량 입력"
+      >
+    </div>
+
+    <div class="modal-footer">
+      <button class="modal-btn-cancel" id="consumeCancel">취소</button>
+      <button class="modal-btn-submit" id="consumeOk">확인</button>
+    </div>
+  </div>
+</div>
+<script>
+const flashMsg = sessionStorage.getItem('flashMsg');
+if (flashMsg) {
+  const el = document.getElementById('jsFlash');
+  el.textContent = flashMsg;
+  el.style.display = 'block';
+  sessionStorage.removeItem('flashMsg');
+  setTimeout(() => el.style.display = 'none', 3000);
+}
+
+function showConfirm(title, message){
+
+  return new Promise(resolve => {
+
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMessage').textContent = message;
+
+    const modal = document.getElementById('confirmModal');
+
+    modal.classList.add('open');
+
+    document.getElementById('confirmOk').onclick = () => {
+      modal.classList.remove('open');
+      resolve(true);
+    };
+
+    document.getElementById('confirmCancel').onclick = () => {
+      modal.classList.remove('open');
+      resolve(false);
+    };
+  });
+}
+function showConsumePrompt(quantity){
+
+  return new Promise(resolve => {
+
+    const modal = document.getElementById('consumeModal');
+
+    document.getElementById('consumeMessage').textContent =
+      `현재 수량 : ${quantity}`;
+
+    const input =
+      document.getElementById('consumeAmountInput');
+
+    input.value = '';
+
+    modal.classList.add('open');
+
+    document.getElementById('consumeOk').onclick = () => {
+
+      modal.classList.remove('open');
+
+      resolve(input.value);
+    };
+
+    document.getElementById('consumeCancel').onclick = () => {
+
+      modal.classList.remove('open');
+
+      resolve(null);
+    };
+  });
+}
+
+let analyzeTimer = null;
+
+async function analyzeFood() {
+  const name = document.getElementById('ingredientName').value.trim();
+  const quantity = document.getElementById('quantity').value.trim();
+  if (!name) return;
+
+  try {
+    const res = await fetch('/api/food/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, quantity }),
+    });
+    const data = await res.json();
+    if (!data.success) return;
+
+    document.getElementById('categoryInfo').value = data.category || '기타';
+    document.getElementById('expiryDate').value = data.expiryDate;
+    document.getElementById('storageMethod').value = data.storageMethod || '냉장실';
+    
+    document.getElementById('r-tip').textContent = `💡 ${data.tip}`;
+    document.getElementById('analyzeResult').classList.add('show');
+
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+document.getElementById('ingredientName').addEventListener('input', function() {
+  clearTimeout(analyzeTimer);
+
+  const val = this.value.trim();
+  if (val.length < 1) return;
+
+  analyzeTimer = setTimeout(() => analyzeFood(), 600);
+});
+
+document.getElementById('quantity').addEventListener('blur', function() {
+  const name = document.getElementById('ingredientName').value.trim();
+  if (name) analyzeFood();
+});
+
+/* ================= 팝업 흐름 제어 로직 ================= */
+function openChoiceModal() {
+  document.getElementById('addChoiceModal').classList.add('open');
+}
+function closeChoiceModal() {
+  document.getElementById('addChoiceModal').classList.remove('open');
+}
+function selectDirectInput() {
+  closeChoiceModal();
+  openAddModal();
+}
+function selectReceiptInput() {
+  closeChoiceModal();
+  document.getElementById('receiptFileInput').click();
+}
+
+async function handleReceiptUpload(input) {
+  if (!input.files || input.files.length === 0) return;
+  
+  const file = input.files[0];
+  const formData = new FormData();
+  formData.append('receipt', file); 
+
+  document.getElementById('ocrLoading').classList.add('show');
+
+  try {
+    const response = await fetch('/fridge/ocr', { 
+      method: 'POST',
+      body: formData
+    });
+    const data = await response.json();
+
+    document.getElementById('ocrLoading').classList.remove('show');
+
+    if (data.success && data.parsedIngredients && data.parsedIngredients.length > 0) {
+      openOcrResultModal(data.parsedIngredients);
+    } else {
+      throw new Error(data.message || '인식된 식재료 정보가 없거나 실패했습니다.');
+    }
+  } catch (error) {
+    document.getElementById('ocrLoading').classList.remove('show');
+    alert('영수증 분석 중 오류가 발생했습니다: ' + error.message);
+  } finally {
+    input.value = ''; 
+  }
+}
+
+function openOcrResultModal(ingredients) {
+  const listContainer = document.getElementById('ocrIngredientsList');
+  listContainer.innerHTML = '';
+
+  ingredients.forEach((item, index) => {
+    const row = document.createElement('div');
+    row.className = 'ocr-item-row';
+    row.style.display = 'flex';
+    row.style.gap = '6px'; 
+    row.style.alignItems = 'center';
+    row.id = `ocr-row-${index}`;
+
+    const categories = ['채소', '과일', '육류', '수산물', '유제품', '달걀', '가공식품', '조미료', '냉동식품', '기타'];
+    const categoryOptions = categories.map(cat => 
+      `<option value="${cat}" ${item.categoryInfo === cat ? 'selected' : ''}>${cat}</option>`
+    ).join('');
+
+    row.innerHTML = `
+      <input type="text" class="modal-input ocr-name-input" value="${item.ingredientName}" placeholder="식재료명" style="flex: 1.5; margin: 0; min-width: 0; padding: 11px 10px;">
+      
+      <input type="text" class="modal-input ocr-quantity-input" value="${item.quantity || '1개'}" placeholder="수량" 
+             style="flex: 0.6; margin: 0; min-width: 0; text-align: center; padding: 11px 4px; box-sizing: border-box;">
+
+      <select class="modal-input ocr-category-select" style="flex: 1.0; margin: 0; height: 41px; min-width: 0; padding: 0 4px 0 8px;">
+        ${categoryOptions}
+      </select>
+
+      <select class="modal-input ocr-storage-select" style="flex: 1.0; margin: 0; height: 41px; min-width: 0; padding: 0 4px 0 8px;">
+        <option value="냉장실" ${item.storageMethod === '냉장실' ? 'selected' : ''}>냉장실</option>
+        <option value="냉동실" ${item.storageMethod === '냉동실' ? 'selected' : ''}>냉동실</option>
+        <option value="실온" ${item.storageMethod === '실온' ? 'selected' : ''}>실온</option>
+      </select>
+
+      <input type="number" class="modal-input ocr-price-input" value="${item.price || 0}" placeholder="가격" min="0" style="flex: 1.0; margin: 0; min-width: 0; padding: 11px 8px; text-align: right;">
+
+      <input type="date" class="modal-input ocr-date-input" value="${item.expiryDate}" style="flex: 1.4; margin: 0; min-width: 0; padding: 11px 6px;">
+      
+      <input type="hidden" class="ocr-id-input" value="${item.ingredientId || ''}">
+
+      <button type="button" onclick="document.getElementById('ocr-row-${index}').remove()" 
+              style="background:#fff; color:#aaa; border:1.5px solid #eee; padding:10px; border-radius:10px; cursor:pointer; height: 41px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">✕</button>
+    `;
+    listContainer.appendChild(row);
+  });
+
+  document.getElementById('ocrResultModal').classList.add('open');
+}
+
+async function submitOcrIngredients() {
+  const nameInputs = document.querySelectorAll('.ocr-name-input');
+  const quantityInputs = document.querySelectorAll('.ocr-quantity-input'); 
+  const categorySelects = document.querySelectorAll('.ocr-category-select');
+  const storageSelects = document.querySelectorAll('.ocr-storage-select');
+  const priceInputs = document.querySelectorAll('.ocr-price-input');
+  const dateInputs = document.querySelectorAll('.ocr-date-input');
+  const idInputs = document.querySelectorAll('.ocr-id-input');
+  
+  const ingredients = [];
+  
+  for (let i = 0; i < nameInputs.length; i++) {
+    const ingredientName = nameInputs[i].value.trim();
+    const quantity = quantityInputs[i].value.trim() || '1개'; 
+    const categoryInfo = categorySelects[i].value;
+    const storageMethod = storageSelects[i].value;
+    const price = priceInputs[i] ? parseInt(priceInputs[i].value) || 0 : 0;
+    const expiryDate = dateInputs[i].value;
+    const ingredientId = idInputs[i].value ? parseInt(idInputs[i].value) : null;
+
+    if (ingredientName) {
+      ingredients.push({ 
+        ingredientName, 
+        quantity,
+        categoryInfo,
+        storageMethod, 
+        price,
+        expiryDate,
+        ingredientId
+      });
+    }
+  }
+
+  if (ingredients.length === 0) {
+    alert('등록할 식재료가 없습니다.');
+    return;
+  }
+
+  try {
+    const response = await fetch('/fridge/ocr/confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ingredients })
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      alert(data.message);
+      location.reload(); 
+    } else {
+      alert('등록 실패: ' + data.message);
+    }
+  } catch (error) {
+    console.error(error);
+    alert('최종 등록 처리 중 서버 에러가 발생했습니다.');
+  }
+}
+
+function openAddModal() {
+  document.getElementById('addModal').classList.add('open');
+  const next7 = new Date(); next7.setDate(next7.getDate()+7);
+  document.getElementById('expiryDate').value = next7.toISOString().split('T')[0];
+}
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('open');
+  document.getElementById('analyzeResult').classList.remove('show');
+  document.getElementById('ingredientName').value = '';
+  document.getElementById('quantity').value = '';
+  document.getElementById('priceInput').value = '';
+ 
+  document.getElementById('categoryInfo').value = '기타';
+  document.getElementById('storageMethod').value = '냉장실';
+}
+
+function submitDirectAddForm() {
+  const form = document.getElementById('addForm');
+  const nameInput = document.getElementById('ingredientName');
+  const quantityInput = document.getElementById('quantity');
+  const expiryInput = document.getElementById('expiryDate');
+
+  if (!nameInput.value.trim()) {
+    alert('식재료 이름을 입력해주세요.');
+    nameInput.focus();
+    return;
+  }
+
+  if (!quantityInput.value.trim()) {
+    quantityInput.value = '1개';
+  }
+
+  if (!expiryInput.value) {
+    const next7 = new Date();
+    next7.setDate(next7.getDate() + 7);
+    expiryInput.value = next7.toISOString().split('T')[0];
+  }
+
+  form.submit();
+}
+function openShareModal(id, name) {
+  const shareIdEl = document.getElementById('shareItemId');
+  const shareNameEl = document.getElementById('shareItemName');
+  if(shareIdEl) shareIdEl.value = id;
+  if(shareNameEl) shareNameEl.value = name;
+  
+  const shareModalEl = document.getElementById('shareModal');
+  if(shareModalEl) shareModalEl.classList.add('open');
+}
+
+function closeShareModal() { 
+  const shareModalEl = document.getElementById('shareModal');
+  if(shareModalEl) shareModalEl.classList.remove('open'); 
+}
+
+function closeOcrResultModal() {
+  document.getElementById('ocrResultModal').classList.remove('open');
+}
+
+['addChoiceModal', 'addModal', 'shareModal'].forEach(id => {
+  const modalEl = document.getElementById(id);
+  if (modalEl) {
+    modalEl.addEventListener('click', function(e) {
+      if(e.target===this) this.classList.remove('open');
+    });
+  }
+});
+function openEditModal(id, name, quantity, expiry, storage, category, amount) {
+
+  document.getElementById('editId').value = id;
+  document.getElementById('editName').value = name;
+  document.getElementById('editQuantity').value = quantity;
+  document.getElementById('editExpiry').value = expiry;
+  document.getElementById('editStorage').value = storage;
+
+  document.getElementById('editCategory').value = category || '기타';
+  document.getElementById('editAmount').value = amount || 0;
+
+  document.getElementById('editModal').classList.add('open');
+}
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+}
+function subtractQuantity(original, used){
+
+  const number = parseFloat(original);
+  const unit = original.replace(/[0-9.\s]/g, '');
+
+  const remain = number - used;
+
+  if(remain <= 0){
+    return null;
+  }
+
+  return `${remain}${unit}`;
+}
+
+async function consumeIngredient(btn){
+  
+  const id = btn.dataset.id;
+  const quantity = btn.dataset.quantity;
+
+const used = await showConsumePrompt(quantity);
+
+  if(used === null) return;
+
+  const usedAmount = parseFloat(used);
+
+  if(isNaN(usedAmount) || usedAmount <= 0){
+    alert('올바른 숫자를 입력해주세요.');
+    return;
+  }
+
+  try {
+
+    const response = await fetch(`/fridge/${id}/consume`, {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+        usedAmount
+      })
+    });
+
+    const data = await response.json();
+
+    if(data.success){
+
+      if(data.message) sessionStorage.setItem('flashMsg', data.message);
+
+      location.reload();
+
+    } else {
+
+      alert(data.message || '실패');
+    }
+
+  } catch(err){
+
+    console.error(err);
+
+    alert('서버 오류');
+  }
+}
+
+document.getElementById('checkAll')?.addEventListener('change', function() {
+
+  const checked = this.checked;
+
+  document.querySelectorAll('.item-checkbox').forEach(cb => {
+    cb.checked = checked;
+  });
+});
+
+
+
+
+/* ================= 삭제 로직 정돈 ================= */
+document.getElementById('deleteSelectedBtn')?.addEventListener('click', async function() {
+    const checkedItems = document.querySelectorAll('.item-checkbox:checked');
+    const ids = [...checkedItems].map(cb => cb.value);
+
+    if (ids.length === 0) {
+        alert('삭제할 식재료를 선택해주세요.');
+        return;
+    }
+
+    const ok = await showConfirm('🗑 선택 삭제', `${ids.length}개의 식재료를 삭제할까요?`);
+    
+    if (!ok) return;
+
+    try {
+        const response = await fetch('/fridge/delete-multiple', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ids })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('삭제 실패: ' + data.message);
+        }
+    } catch (err) {
+        console.error(err);
+        alert('서버 오류');
+    }
+});
+
+/* ================= 만료 삭제 로직 ================= */
+document.getElementById('deleteExpiredBtn')?.addEventListener('click', async function () {
+    const ok = await showConfirm('⏰ 만료 삭제', '만료된 식재료를 모두 삭제할까요?');
+
+    if (!ok) return;
+
+    try {
+        const response = await fetch('/fridge/delete-expired', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            alert(data.message || `${data.deletedCount}개의 식재료가 삭제되었습니다`);
+            location.reload();
+        } else {
+            alert('삭제 실패');
+        }
+    } catch (err) {
+        console.error(err);
+        alert('서버 오류');
+    }
+});
+
+// 1. 기존 값을 저장할 변수
+let originalData = {};
+
+// 2. 모달 열 때 값을 저장 (openEditModal 수정)
+function openEditModal(id, name, quantity, expiry, storage, category, amount) {
+    // 기존 값 저장
+    originalData = { id, name, quantity, expiry, storage, category, amount: String(amount) };
+
+    document.getElementById('editId').value = id;
+    document.getElementById('editName').value = name;
+    document.getElementById('editQuantity').value = quantity;
+    document.getElementById('editExpiry').value = expiry;
+    document.getElementById('editStorage').value = storage;
+    document.getElementById('editCategory').value = category || '기타';
+    document.getElementById('editAmount').value = amount || 0;
+
+    document.getElementById('editModal').classList.add('open');
+}
+
+async function submitEdit() {
+  const id = document.getElementById('editId').value;
+  
+  // 메모를 제외하고, 화면에 있는 input들만 정확히 가져옵니다.
+  const body = {
+    ingredientName: document.getElementById('editName').value.trim(),
+    quantity: document.getElementById('editQuantity').value.trim(),
+    expiryDate: document.getElementById('editExpiry').value,
+    storageMethod: document.getElementById('editStorage').value,
+    categoryInfo: document.getElementById('editCategory').value,
+    amount: document.getElementById('editAmount').value
+  };
+  async function discardConfirm(e, form){
+
+  e.preventDefault();
+
+  const ok = await showConfirm(
+    '🗑 폐기',
+    '폐기 처리할까요?'
+  );
+
+  if(ok){
+    form.submit();
+  }
+
+  return false;
+}
+async function deleteConfirm(e, form){
+
+  e.preventDefault();
+
+  const ok = await showConfirm(
+    '🗑 삭제',
+    '삭제할까요?'
+  );
+
+  if(ok){
+    form.submit();
+  }
+
+  return false;
+}
+
+  try {
+    const res = await fetch(`/fridge/${id}/edit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+
+if (data.success) {
+
+  sessionStorage.setItem(
+    'flashMsg',
+    '✅ 식재료가 수정되었습니다.'
+  );
+
+      location.reload();
+    } else {
+      alert(data.message || '수정 실패');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('서버 오류');
+  }
+}
+
+</script>
+
+<%
+    function getCategoryEmoji(cat) {
+        const map = {
+            '채소': '🥬',
+            '과일': '🍎',
+            '육류': '🥩',
+            '수산물': '🐟',
+            '유제품': '🥛',
+            '달걀': '🥚',
+            '가공식품': '🍱',
+            '조미료': '🧂',
+            '냉동식품': '🧊'
+        };
+        return map[cat] || '🍽️';
+    }
+%>

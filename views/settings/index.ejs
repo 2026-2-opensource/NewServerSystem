@@ -1,0 +1,127 @@
+<style>
+.page-title { font-size:22px; font-weight:700; color:#1a3a15; margin-bottom:24px; }
+.settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; }
+.settings-card { background:#fff; border-radius:20px; padding:32px; box-shadow:0 2px 12px rgba(0,0,0,.06); }
+.profile-top { display:flex; flex-direction:column; align-items:center; margin-bottom:28px; }
+.profile-avatar { width:80px; height:80px; background:#e8f5e0; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:44px; margin-bottom:12px; }
+.profile-name { font-size:18px; font-weight:700; color:#222; }
+.profile-email { font-size:13px; color:#aaa; margin-top:4px; }
+.profile-dong { font-size:13px; color:#2d5a27; margin-top:4px; display:flex; align-items:center; gap:4px; }
+.form-group { margin-bottom:16px; }
+.form-label { display:block; font-size:13px; color:#666; font-weight:600; margin-bottom:6px; }
+.form-input { width:100%; padding:12px 14px; border:1.5px solid #e0e0e0; border-radius:10px; font-size:14px; box-sizing:border-box; font-family:inherit; background:#fafafa; }
+.form-input:focus { outline:none; border-color:#2d5a27; background:#fff; }
+/* 비활성화 상태(조회 모드)일 때의 인풋 디자인 */
+.form-input:disabled { background:#f5f5f5; color:#777; cursor:not-allowed; border-color:#eaeaea; }
+.btn-save { width:100%; padding:14px; background:#2d5a27; color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; margin-top:8px; }
+.btn-save:hover { background:#245020; }
+/* 수정하기 전환 버튼 디자인 */
+.btn-edit-toggle { width:100%; padding:14px; background:#fff; color:#2d5a27; border:2px solid #2d5a27; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; margin-top:8px; transition: all 0.2s; }
+.btn-edit-toggle:hover { background:#e8f5e0; }
+</style>
+
+<h2 class="page-title">설정</h2>
+
+<div style="display:flex;justify-content:center;">
+  <div class="settings-card" style="max-width:500px;width:100%;">
+    <div class="profile-top">
+      <div class="profile-avatar"><img src="/images/character/front.png" style="width:56px;height:56px;object-fit:contain;"></div>
+      <div class="profile-name"><%= user.memberName %></div>
+      <div class="profile-email"><%= user.memberId %></div>
+      <div class="profile-dong">📍 <%= user.district %> <%= user.dong %></div>
+    </div>
+
+    <form id="settingsForm" action="/settings/update" method="POST" onsubmit="return validatePassword()">
+      <div class="form-group">
+        <label class="form-label">닉네임</label>
+        <input type="text" name="memberName" class="form-input editable-input" value="<%= user.memberName %>" required maxlength="20" disabled>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">시</label>
+        <input type="text" name="city" class="form-input editable-input" value="<%= user.city %>" required maxlength="20" disabled placeholder="예: 경기도, 서울특별시">
+      </div>
+      <div class="form-group">
+        <label class="form-label">구</label>
+        <input type="text" name="district" class="form-input editable-input" value="<%= user.district %>" required maxlength="20" disabled placeholder="예: 일산동구, 마포구, 분당구">
+      </div>
+      <div class="form-group">
+        <label class="form-label">동</label>
+        <input type="text" name="dong" class="form-input editable-input" value="<%= user.dong %>" required maxlength="20" disabled placeholder="예: 백석동, 망원동, 삼평동">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">연락처</label>
+        <input type="text" name="contact" class="form-input editable-input" value="<%= user.contact %>" maxlength="20" disabled>
+      </div>
+      
+      <div class="form-group" id="currentPwGroup">
+        <label class="form-label">기존 비밀번호</label>
+        <input type="text" class="form-input" value="********" disabled style="letter-spacing: 4px;">
+      </div>
+
+      <div class="form-group" id="newPwGroup" style="display: none;">
+        <label class="form-label">새 비밀번호 (변경 시만 입력)</label>
+        <input type="password" name="newPassword" class="form-input" placeholder="새 비밀번호 입력">
+      </div>
+
+      <div id="buttonArea">
+        <button type="button" class="btn-edit-toggle" onclick="enableEditMode()">수정하기</button>
+      </div>
+    </form>
+
+    <div style="margin-top:40px;padding-top:24px;border-top:1px solid #f0f0f0;text-align:center;">
+      <button onclick="showWithdrawModal()" style="background:none;border:none;color:#ccc;font-size:13px;cursor:pointer;text-decoration:underline;">회원 탈퇴</button>
+    </div>
+  </div>
+</div>
+
+<div id="withdrawModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.4);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:24px;padding:36px 32px;width:320px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.2);">
+    <div style="margin-bottom:12px;"><img src="/images/delete.png" style="height:60px;object-fit:contain;"></div>
+    <div style="font-size:17px;font-weight:800;color:#222;margin-bottom:8px;">정말로 탈퇴하시겠습니까?</div>
+    <div style="font-size:13px;color:#888;margin-bottom:28px;line-height:1.6;">회원탈퇴 시 모든 기록이<br>영구적으로 삭제됩니다.</div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeWithdrawModal()" style="flex:1;background:#f5f5f5;color:#555;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;">아니오</button>
+      <form action="/settings/withdraw" method="POST" style="flex:1;">
+        <button type="submit" style="width:100%;background:#e74c3c;color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;">예</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function showWithdrawModal() {
+  document.getElementById('withdrawModal').style.display = 'flex';
+}
+function closeWithdrawModal() {
+  document.getElementById('withdrawModal').style.display = 'none';
+}
+
+function enableEditMode() {
+  // 💡 가짜 별표창은 켜지 않도록 클래스(.editable-input)가 있는 인풋들만 안전하게 활성화합니다.
+  const inputs = document.querySelectorAll('#settingsForm .editable-input');
+  inputs.forEach(input => {
+    input.removeAttribute('disabled');
+  });
+
+  document.getElementById('currentPwGroup').style.display = 'none';
+  document.getElementById('newPwGroup').style.display = 'block';
+
+  document.getElementById('buttonArea').innerHTML = `
+    <div style="display:flex; gap:10px;">
+      <button type="button" class="btn-edit-toggle" style="margin-top:8px; flex:1;" onclick="window.location.reload()">취소</button>
+      <button type="submit" class="btn-save" style="flex:2;">저장하기</button>
+    </div>
+  `;
+}
+
+function validatePassword() {
+  const newPw = document.getElementsByName('newPassword')[0].value;
+  if (newPw.trim().length > 0 && newPw.length < 6) {
+    alert('새 비밀번호는 6자 이상으로 설정해 주세요.');
+    return false;
+  }
+  return true;
+}
+</script>

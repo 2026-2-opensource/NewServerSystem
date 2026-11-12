@@ -1,0 +1,95 @@
+/* ===== 기본 리셋 ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: 'Noto Sans KR', -apple-system, sans-serif; color: #333; line-height: 1.5; }
+/* ===== 앱 레이아웃 ===== */
+.app-body { background: #f0f6ec; }
+.app-container { display: grid; grid-template-columns: 200px 1fr; min-height: 100vh; }
+
+/* ===== 사이드바 ===== */
+.sidebar {
+  background: #fff;
+  padding: 0;
+  box-shadow: 1px 0 8px rgba(0,0,0,.06);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.logo-icon { font-size: 28px; }
+.logo-text { font-size: 16px; font-weight: 700; color: #2d5a27; }
+.sidebar-nav { padding: 12px 0; flex: 1; }
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: #777;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 0;
+  transition: background .15s, color .15s;
+}
+.nav-item:hover { background: #f8fdf4; color: #2d5a27; }
+.nav-item.active { background: #e8f5e0; color: #2d5a27; font-weight: 700; border-right: 3px solid #2d5a27; }
+.nav-icon { font-size: 18px; width: 24px; text-align: center; }
+.nav-label { font-size: 13px; }
+
+/* ===== 메인 콘텐츠 ===== */
+.main-content {
+  padding: 32px;
+  max-width: 1100px;
+  width: 100%;
+}
+
+/* ===== 플래시 메시지 ===== */
+.flash {
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.flash-success { background: #f0fff4; color: #27ae60; border: 1px solid #b2dfdb; }
+.flash-error { background: #fff0f0; color: #c0392b; border: 1px solid #f5c6cb; }
+
+/* ===== 에러 페이지 ===== */
+.error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f8fdf4; }
+.error-content { text-align: center; }
+.error-code { font-size: 80px; font-weight: 700; color: #e0e0e0; }
+.error-msg { font-size: 20px; color: #888; margin: 12px 0 24px; }
+.btn-home { display: inline-block; background: #2d5a27; color: #fff; padding: 12px 28px; border-radius: 10px; text-decoration: none; font-weight: 600; }
+
+/* ===== 상단 헤더 ===== */
+.main-wrapper { display:flex; flex-direction:column; flex:1; min-width:0; }
+.top-header { display:flex; align-items:center; justify-content:flex-end; padding:12px 32px; background:#fff; border-bottom:1px solid #f0f0f0; position:sticky; top:0; z-index:50; }
+.top-header-right { display:flex; align-items:center; gap:12px; }
+.notif-btn { background:none; border:none; font-size:18px; cursor:pointer; padding:6px; border-radius:8px; }
+.notif-btn:hover { background:#f5f5f5; }
+
+/* ===== 유저 드롭다운 ===== */
+.user-dropdown-wrap { position:relative; }
+.user-dropdown-btn { display:flex; align-items:center; gap:8px; background:#f8fdf4; border:1.5px solid #e0e0e0; border-radius:20px; padding:8px 14px; cursor:pointer; font-family:inherit; font-size:13px; font-weight:600; color:#333; }
+.user-dropdown-btn:hover { background:#e8f5e0; }
+.user-avatar-sm { font-size:18px; }
+.dropdown-arrow { font-size:10px; color:#aaa; }
+.user-dropdown-menu { display:none; position:absolute; top:calc(100% + 8px); right:0; background:#fff; border-radius:14px; box-shadow:0 8px 32px rgba(0,0,0,.12); border:1px solid #f0f0f0; min-width:140px; overflow:hidden; z-index:200; }
+.user-dropdown-menu.open { display:block; }
+.dropdown-item { display:block; padding:13px 18px; text-decoration:none; font-size:13px; color:#444; font-weight:500; }
+.dropdown-item:hover { background:#f8fdf4; color:#2d5a27; }
+.dropdown-logout { color:#e74c3c; border-top:1px solid #f5f5f5; }
+.dropdown-logout:hover { background:#fff5f5; color:#c0392b; }
+
+/* ===== app-container 수정 ===== */
+.app-container { display:grid; grid-template-columns:200px 1fr; min-height:100vh; }
+.main-content { padding:28px 32px; }
