@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foreshy-app-deployment
+  labels:
+    app: foreshy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: foreshy
+  template:
+    metadata:
+      labels:
+        app: foreshy
+    spec:
+      containers:
+      - name: foreshy-container
+        image: yewon6211/foreshy-app:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: DB_HOST
+          value: "10.178.0.2"
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_USER
+          value: "foreshy_user"
+        - name: DB_PASSWORD
+          value: "__DB_PASSWORD__"
+        - name: DB_NAME
+          value: "foreshy_db"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
