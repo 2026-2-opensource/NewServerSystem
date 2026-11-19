@@ -11,9 +11,19 @@ const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
 
+
 const app = express();
+
+// Kubernetes Health Check
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        status: 'OK'
+    });
+});
+
 // Express 앱을 Http 서버로 감싸기
 const server = http.createServer(app);
+
 const io = socketIo(server);
 app.set('io', io);
 

@@ -1,3 +1,4 @@
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,6 +21,33 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
+
+        # 애플리케이션 최초 실행 확인
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          periodSeconds: 10
+          failureThreshold: 30
+
+        # 컨테이너 생존 여부 확인
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        # 트래픽 수신 준비 여부 확인
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+
         env:
         - name: NODE_ENV
           value: "production"
