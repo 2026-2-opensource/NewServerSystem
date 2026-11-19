@@ -1,0 +1,1107 @@
+{
+  "info": {
+    "_postman_id": "4f9cc453-442b-44a7-9ef6-29c29fd3268a",
+    "name": "오픈소스",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "60270422",
+    "_collection_link": "https://go.postman.co/collection/60270422-4f9cc453-442b-44a7-9ef6-29c29fd3268a?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "회원·인증·냉장고",
+      "item": [
+        {
+          "name": "회원가입 성공 → 로그인 페이지로 이동",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"testMemberId\", \"t\" + Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"가입 성공 → 로그인 페이지로 리다이렉트\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.include(\"/auth/login\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "memberId",
+                  "value": "{{testMemberId}}"
+                },
+                {
+                  "key": "memberName",
+                  "value": "테스트유저"
+                },
+                {
+                  "key": "password",
+                  "value": "123456!"
+                },
+                {
+                  "key": "city",
+                  "value": "서울특별시"
+                },
+                {
+                  "key": "district",
+                  "value": "성북구"
+                },
+                {
+                  "key": "dong",
+                  "value": "동선동"
+                },
+                {
+                  "key": "contact",
+                  "value": "010-1234-5678"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}auth/register",
+              "host": [
+                "{{baseUrl}}auth"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "로그인 페이지 열기 → 200, 로그인 폼 있음",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"상태코드 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"로그인 폼이 있다\", function () {\r\n    const body = pm.response.text();\r\n\r\n    pm.expect(body).to.include('action=\"/auth/login\"');\r\n    pm.expect(body).to.include('name=\"memberId\"');\r\n    pm.expect(body).to.include('name=\"password\"');\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}auth/login",
+              "host": [
+                "{{baseUrl}}auth"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "로그인 안 하고 대시보드 접근 → 로그인 페이지로 튕김",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"비로그인 → 로그인 페이지로 리다이렉트\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.include(\"/auth/login\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}dashboard",
+              "host": [
+                "{{baseUrl}}dashboard"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "비밀번호 틀리게 로그인 → 실패, 에러 메시지",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"로그인 실패 → 로그인 페이지로 리다이렉트\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.include(\"/auth/login\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "memberId",
+                  "value": "{{testMemberId}}"
+                },
+                {
+                  "key": "password",
+                  "value": "wrong1234!"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}auth/login",
+              "host": [
+                "{{baseUrl}}auth"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "로그인 성공 → 대시보드로 이동",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"대시보드로 이동(302)\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.include(\"/dashboard\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "memberId",
+                  "value": "{{testMemberId}}"
+                },
+                {
+                  "key": "password",
+                  "value": "123456!"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}auth/login",
+              "host": [
+                "{{baseUrl}}auth"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "대시보드 열기 → 200, 사용자 이름 표시",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"대시보드 접근 및 사용자 이름 표시\", function () {\r\n    pm.response.to.have.status(200);\r\n\r\n    const body = pm.response.text();\r\n    const memberName = \"테스트유저\";   // 3번 가입 때 보낸 memberName과 같은 값\r\n\r\n    pm.expect(body).to.include(`<strong>${memberName}</strong>`);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}dashboard",
+              "host": [
+                "{{baseUrl}}dashboard"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "식재료 등록",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"등록 후 /fridge로 리다이렉트\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.include(\"/fridge\");\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"testIngredientName\", \"테스트식재료\" + Date.now());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "ingredientName",
+                  "value": "{{testIngredientName}}"
+                },
+                {
+                  "key": "categoryInfo",
+                  "value": "채소"
+                },
+                {
+                  "key": "storageMethod",
+                  "value": "냉장실"
+                },
+                {
+                  "key": "expiryDate",
+                  "value": "2029-12-31"
+                },
+                {
+                  "key": "quantity",
+                  "value": "1개"
+                },
+                {
+                  "key": "amount",
+                  "value": "1000"
+                },
+                {
+                  "key": "fridgeId",
+                  "value": "\t{{fridgeId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}fridge/add",
+              "host": [
+                "{{baseUrl}}fridge"
+              ],
+              "path": [
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "냉장고 목록 열기 → 200, 내 식재료 목록",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"냉장고 페이지 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst m = pm.response.text().match(/name=\"fridgeId\" value=\"(\\d+)\"/);\r\npm.test(\"fridgeId 추출\", function () {\r\n    pm.expect(m).to.not.be.null;\r\n});\r\nif (m) pm.collectionVariables.set(\"fridgeId\", m[1]);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}fridge",
+              "host": [
+                "{{baseUrl}}fridge"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "식재료 목록 확인",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"상태코드 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"등록한 식재료가 목록에 있다\", function () {\r\n    pm.expect(pm.response.text()).to.include(pm.collectionVariables.get(\"testIngredient\"));\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}fridge",
+              "host": [
+                "{{baseUrl}}fridge"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "로그아웃 → 로그인 페이지로 이동",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"로그아웃 → 메인으로 리다이렉트\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.eql(\"/\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}auth/logout",
+              "host": [
+                "{{baseUrl}}auth"
+              ],
+              "path": [
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "나눔·공원·활동",
+      "item": [
+        {
+          "name": "로그인",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"대시보드로 이동(302)\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.include(\"/dashboard\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "memberId",
+                  "value": "{{testMemberId}}"
+                },
+                {
+                  "key": "password",
+                  "value": "123456!"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}auth/login",
+              "host": [
+                "{{baseUrl}}auth"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "나눔용 식재료 등록 → 302",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"등록 후 /fridge로 리다이렉트\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.include(\"/fridge\");\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"shareIngredientName\", \"나눔식재료\" + Date.now());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "ingredientName",
+                  "value": "{{shareIngredientName}}"
+                },
+                {
+                  "key": "categoryInfo",
+                  "value": "채소"
+                },
+                {
+                  "key": "storageMethod",
+                  "value": "냉장실"
+                },
+                {
+                  "key": "expiryDate",
+                  "value": "2029-12-31"
+                },
+                {
+                  "key": "quantity",
+                  "value": "1개"
+                },
+                {
+                  "key": "amount",
+                  "value": "1000"
+                },
+                {
+                  "key": "fridgeId",
+                  "value": "\t{{fridgeId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}fridge/add",
+              "host": [
+                "{{baseUrl}}fridge"
+              ],
+              "path": [
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "게시판 목록 열기 -> 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();\r\n\r\npm.test(\"나눔 게시판 열기(200)\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"우리 동네 게시판 표시\", function () {\r\n    pm.expect(html).to.include(\"전체 게시판\");\r\n});\r\n\r\n// 나눔 등록 창의 식재료 목록에서 방금 등록한 식재료 id 꺼내기\r\nconst name = pm.collectionVariables.get(\"shareIngredientName\");\r\nconst nameIndex = html.indexOf(name);\r\nconst start = html.lastIndexOf(\"selectIngredient(this, '\", nameIndex);\r\nconst match = html.substring(start).match(/selectIngredient\\(this, '([^']+)'/);\r\nif (nameIndex !== -1 && match) {\r\n    pm.collectionVariables.set(\"shareOwnedId\", match[1]);\r\n}\r\n\r\npm.test(\"나눔용 식재료 id 저장됨\", function () {\r\n    pm.expect(pm.collectionVariables.get(\"shareOwnedId\")).to.be.ok;\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}sharing",
+              "host": [
+                "{{baseUrl}}sharing"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "나눔 글 작성 → 302",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"shareTitle\", \"테스트나눔_\" + Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"나눔 글 작성 후 게시판으로 이동(302)\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.include(\"/sharing\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "postTitle",
+                  "value": "{{shareTitle}}"
+                },
+                {
+                  "key": "postContent",
+                  "value": "Postman 테스트용 나눔 글입니다"
+                },
+                {
+                  "key": "registeredQuantity",
+                  "value": "1개"
+                },
+                {
+                  "key": "ownedIngredientId",
+                  "value": "\t{{shareOwnedId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}sharing/create",
+              "host": [
+                "{{baseUrl}}sharing"
+              ],
+              "path": [
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "나눔 목록에 내 글 추가됨",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();\r\nconst title = pm.collectionVariables.get(\"shareTitle\");\r\n\r\npm.test(\"방금 작성한 글이 목록에 보임\", function () {\r\n    pm.response.to.have.status(200);\r\n    pm.expect(html).to.include(title);\r\n});\r\n\r\n// 23번(나눔 완료)에서 쓸 게시글 id 저장\r\nconst titleIndex = html.indexOf(title);\r\nconst linkIndex = html.lastIndexOf('href=\"/sharing/', titleIndex);\r\nconst match = html.substring(linkIndex).match(/href=\"\\/sharing\\/([^\"]+)\"/);\r\nif (titleIndex !== -1 && match) {\r\n    pm.collectionVariables.set(\"sharingId\", match[1]);\r\n}\r\n\r\npm.test(\"게시글 id 저장됨\", function () {\r\n    pm.expect(pm.collectionVariables.get(\"sharingId\")).to.be.ok;\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}sharing",
+              "host": [
+                "{{baseUrl}}sharing"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "나눔 완료 → 302",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"나눔 완료 후 게시판으로 이동(302)\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.match(/\\/sharing$/);\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"receiverId\", \"qwert\");"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Referer",
+                "value": "{{baseUrl}}sharing"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "receiverId",
+                  "value": "{{receiverId}}"
+                },
+                {
+                  "key": "",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}sharing/{{sharingId}}/complete",
+              "host": [
+                "{{baseUrl}}sharing"
+              ],
+              "path": [
+                "{{sharingId}}",
+                "complete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "나눔 완료 상태 + 아이템 획득 확인",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();\r\nconst title = pm.collectionVariables.get(\"shareTitle\");\r\n\r\npm.test(\"나눔 완료 플래시 메시지 표시\", function () {\r\n    pm.response.to.have.status(200);\r\n    pm.expect(html).to.include(\"flash-success\");\r\n    pm.expect(html).to.include(\"나눔 완료!\");\r\n});\r\n\r\npm.test(\"공원 아이템 획득 메시지 표시\", function () {\r\n    pm.expect(html).to.include(\"획득\");\r\n});\r\n\r\npm.test(\"게시글 상태가 '나눔 완료'로 변경됨\", function () {\r\n    const start = html.indexOf(title);\r\n    const end = html.indexOf(\"</a>\", start);\r\n    const card = html.substring(start, end);\r\n    pm.expect(card).to.include(\"나눔 완료\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}sharing",
+              "host": [
+                "{{baseUrl}}sharing"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "나눔 보상 → 공원 메뉴 NEW 배지 표시",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();\r\nconst start = html.indexOf('id=\"park-nav-item\"');\r\nconst menu = html.substring(start, html.indexOf(\"</a>\", start));\r\n\r\npm.test(\"대시보드 열기(200)\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"사이드바 '내 공원'에 NEW 배지 표시\", function () {\r\n    pm.expect(menu).to.include(\"NEW\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}dashboard",
+              "host": [
+                "{{baseUrl}}dashboard"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "소비용 식재료 등록 → 302",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"등록 후 /fridge로 리다이렉트\", function () {\r\n    pm.response.to.have.status(302);\r\n    pm.expect(pm.response.headers.get(\"Location\")).to.include(\"/fridge\");\r\n});"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"consumeIngredientName\", \"소비식재료\" + Date.now());\r\n\r\n// 유통기한: 오늘 + 2일 (3일 이내 임박 식재료)\r\nconst d = new Date();\r\nd.setDate(d.getDate() + 2);\r\nconst pad = n => String(n).padStart(2, \"0\");\r\npm.collectionVariables.set(\"consumeExpiry\", `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "ingredientName",
+                  "value": "{{consumeIngredientName}}"
+                },
+                {
+                  "key": "categoryInfo",
+                  "value": "채소"
+                },
+                {
+                  "key": "storageMethod",
+                  "value": "냉장실"
+                },
+                {
+                  "key": "expiryDate",
+                  "value": "{{consumeExpiry}}"
+                },
+                {
+                  "key": "quantity",
+                  "value": "1개"
+                },
+                {
+                  "key": "amount",
+                  "value": "1000"
+                },
+                {
+                  "key": "fridgeId",
+                  "value": "\t{{fridgeId}}"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}fridge/add",
+              "host": [
+                "{{baseUrl}}fridge"
+              ],
+              "path": [
+                "add"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "소비용 식재료 id 가져오기",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();\r\nconst name = pm.collectionVariables.get(\"consumeIngredientName\");\r\nconst nameIndex = html.indexOf(name);\r\nconst start = html.lastIndexOf(\"selectIngredient(this, '\", nameIndex);\r\nconst match = html.substring(start).match(/selectIngredient\\(this, '([^']+)'/);\r\nif (nameIndex !== -1 && match) {\r\n    pm.collectionVariables.set(\"consumeOwnedId\", match[1]);\r\n}\r\n\r\npm.test(\"소비용 식재료 id 저장됨\", function () {\r\n    pm.expect(pm.collectionVariables.get(\"consumeOwnedId\")).to.be.ok;\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}sharing",
+              "host": [
+                "{{baseUrl}}sharing"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "식재료 소비 → 아이템 획득",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();\r\n\r\npm.test(\"소비 성공\", function () {\r\n    pm.response.to.have.status(200);\r\n    pm.expect(json.success).to.eql(true);\r\n    pm.expect(json.message).to.include(\"소비 완료\");\r\n});\r\n\r\npm.test(\"공원 아이템 획득 메시지\", function () {\r\n    pm.expect(json.message).to.include(\"획득\");\r\n});\r\n\r\npm.test(\"임박 식재료 절약·CO2 반영 메시지\", function () {\r\n    pm.expect(json.message).to.include(\"절약\");\r\n    pm.expect(json.message).to.include(\"CO₂\");\r\n});\r\n\r\nconst reward = json.message.match(/\\[(.+?)\\] 획득/);\r\nif (reward) {\r\n    pm.collectionVariables.set(\"rewardItemName\", reward[1]);\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "usedAmount",
+                  "value": "1"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}fridge/{{consumeOwnedId}}/consume",
+              "host": [
+                "{{baseUrl}}fridge"
+              ],
+              "path": [
+                "{{consumeOwnedId}}",
+                "consume"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "소비한 식재료 냉장고에서 사라짐",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"냉장고 페이지 열기(200)\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"소비한 식재료가 냉장고에 없음\", function () {\r\n    const name = pm.collectionVariables.get(\"consumeIngredientName\");\r\n    pm.expect(pm.response.text()).to.not.include(name);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}fridge",
+              "host": [
+                "{{baseUrl}}fridge"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "공원 메뉴 NEW 배지 표시",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();\r\nconst start = html.indexOf('id=\"park-nav-item\"');\r\nconst menu = html.substring(start, html.indexOf(\"</a>\", start));\r\n\r\npm.test(\"대시보드 열기(200)\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"사이드바 '내 공원'에 NEW 배지 표시\", function () {\r\n    pm.expect(menu).to.include(\"NEW\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}dashboard",
+              "host": [
+                "{{baseUrl}}dashboard"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "공원 페이지 열기 → 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();\r\n\r\npm.test(\"공원 페이지 열기(200)\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"공원 배경 표시\", function () {\r\n    pm.expect(html).to.include(\"공원 배경\");\r\n});\r\n\r\npm.test(\"인벤토리 표시 + 아이템 있음\", function () {\r\n    pm.expect(html).to.include(\"보유 아이템\");\r\n    pm.expect(html).to.not.include(\"아직 아이템이 없어요\");\r\n});\r\n\r\npm.test(\"소비 보상으로 받은 아이템이 인벤토리에 있음\", function () {\r\n    pm.expect(html).to.include(pm.collectionVariables.get(\"rewardItemName\"));\r\n});\r\n\r\npm.test(\"새로 받은 아이템에 NEW 표시\", function () {\r\n    pm.expect(html).to.include(\">NEW<\");\r\n});\r\n\r\n// 배치 테스트에 쓸 아이템 templateId 저장\r\nconst match = html.match(/data-template-id=\"([^\"]+)\"/);\r\nif (match) {\r\n    pm.collectionVariables.set(\"parkTemplateId\", match[1]);\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}park",
+              "host": [
+                "{{baseUrl}}park"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "아이템 배치",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();\r\n\r\npm.test(\"아이템 배치 성공\", function () {\r\n    pm.response.to.have.status(200);\r\n    pm.expect(json.success).to.eql(true);\r\n});\r\n\r\nif (json.parkItem) {\r\n    pm.collectionVariables.set(\"parkItemId\", json.parkItem.parkItemId);\r\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"templateId\": \"{{parkTemplateId}}\",\r\n  \"posX\": 50,\r\n  \"posY\": 50\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}park/place",
+              "host": [
+                "{{baseUrl}}park"
+              ],
+              "path": [
+                "place"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "배치한 아이템 저장 확인",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();\r\nconst id = pm.collectionVariables.get(\"parkItemId\");\r\n\r\npm.test(\"공원 다시 열어도 배치한 아이템이 저장되어 있음\", function () {\r\n    pm.response.to.have.status(200);\r\n    pm.expect(html).to.include(`\"parkItemId\":${id}`);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}park",
+              "host": [
+                "{{baseUrl}}park"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "공원 방문 후 NEW 배지 사라짐",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();\r\nconst start = html.indexOf('id=\"park-nav-item\"');\r\nconst menu = html.substring(start, html.indexOf(\"</a>\", start));\r\n\r\npm.test(\"공원 방문 후 '내 공원' NEW 배지 사라짐\", function () {\r\n    pm.expect(menu).to.not.include(\"NEW\");\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}dashboard",
+              "host": [
+                "{{baseUrl}}dashboard"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "활동 페이지 열기 → 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const html = pm.response.text();\r\n\r\npm.test(\"활동 페이지 열기(200)\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"통계 그래프 영역 표시\", function () {\r\n    pm.expect(html).to.include(\"최근 3개월 통계\");\r\n    pm.expect(html).to.include('id=\"statsChart\"');\r\n});\r\n\r\n// 상단 통계 카드 숫자 꺼내기\r\nconst getStat = (color) => {\r\n    const m = html.match(new RegExp('stat-value ' + color + '\">([^<]+)<'));\r\n    return m ? parseFloat(m[1].replace(/[^0-9.]/g, \"\")) : NaN;\r\n};\r\n\r\npm.test(\"나눔 완료 1회 이상 반영\", function () {\r\n    pm.expect(getStat(\"green\")).to.be.at.least(1);\r\n});\r\n\r\npm.test(\"절약 금액 반영 (0원보다 큼)\", function () {\r\n    pm.expect(getStat(\"orange\")).to.be.above(0);\r\n});\r\n\r\npm.test(\"CO2 절감량 반영 (0kg보다 큼)\", function () {\r\n    pm.expect(getStat(\"blue\")).to.be.above(0);\r\n});\r\n\r\npm.test(\"나눔 완료한 글이 '나눔 완료된 게시글'에 표시\", function () {\r\n    const title = pm.collectionVariables.get(\"shareTitle\");\r\n    pm.expect(html).to.include('activity-text completed\">' + title);\r\n});\r\n\r\npm.test(\"이번 달 그래프 데이터에 절약 금액 반영\", function () {\r\n    const m = html.match(/const monthlyData = (\\[[\\s\\S]*?\\]);/);\r\n    pm.expect(m).to.not.be.null;\r\n    const data = JSON.parse(m[1]);\r\n    pm.expect(data[data.length - 1].savings).to.be.above(0);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}activity",
+              "host": [
+                "{{baseUrl}}activity"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "testMemberId",
+      "value": ""
+    },
+    {
+      "key": "testIngredientName",
+      "value": ""
+    },
+    {
+      "key": "fridgeId",
+      "value": ""
+    },
+    {
+      "key": "shareIngredientName",
+      "value": ""
+    },
+    {
+      "key": "shareOwnedId",
+      "value": ""
+    },
+    {
+      "key": "shareTitle",
+      "value": ""
+    },
+    {
+      "key": "sharingId",
+      "value": ""
+    },
+    {
+      "key": "receivereId",
+      "value": ""
+    },
+    {
+      "key": "receiverId",
+      "value": ""
+    },
+    {
+      "key": "consumeIngredientName",
+      "value": ""
+    },
+    {
+      "key": "consumeExpiry",
+      "value": ""
+    },
+    {
+      "key": "consumeOwnedId",
+      "value": ""
+    },
+    {
+      "key": "parkTemplateId",
+      "value": ""
+    },
+    {
+      "key": "rewardItemName",
+      "value": ""
+    },
+    {
+      "key": "parkItemId",
+      "value": ""
+    }
+  ]
+}
