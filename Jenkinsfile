@@ -83,15 +83,15 @@ pipeline {
         steps {
         withCredentials([string(credentialsId: 'db-password', variable: 'DB_PASSWORD')]) {
             sh '''
-            sed -i "s|yewon6211/foreshy-app:latest|yewon6211/foreshy-app:$BUILD_NUMBER|" k8s/deployment.yaml
-            sed -i "s|__DB_PASSWORD__|$DB_PASSWORD|" k8s/deployment.yaml
+            sed -i "s|yewon6211/foreshy-app:latest|yewon6211/foreshy-app:$BUILD_NUMBER|" deployment.yaml
+            sed -i "s|__DB_PASSWORD__|$DB_PASSWORD|" deployment.yaml
             '''
         }
         step([$class: 'KubernetesEngineBuilder',
                 projectId: env.PROJECT_ID,
                 clusterName: env.CLUSTER_NAME,
                 location: env.LOCATION,
-                manifestPattern: 'k8s/',
+                manifestPattern: '*.yaml',
                 credentialsId: env.GKE_CREDENTIAL,
                 verifyDeployments: true])
         }
