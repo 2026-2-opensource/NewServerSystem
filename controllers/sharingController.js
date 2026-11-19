@@ -41,14 +41,16 @@ async function giveRandomParkItem(memberId, points = 0, transaction = null) {
     });
 
     if (existing) {
-      await existing.update({ quantity: existing.quantity + 1 }, options);
+      await existing.update({ quantity: existing.quantity + 1, isNew: true }, options);
     } else {
       await Inventory.create({
         memberId,
         templateId: randomTemplate.templateId,
         quantity: 1,
+        isNew: true,
       }, options);
     }
+    await Member.update({ hasNewParkItem: true }, { where: { memberId }, ...options });
     return randomTemplate.itemName;
   } catch (err) {
     console.error('❌ 아이템 지급 오류:', err.message);

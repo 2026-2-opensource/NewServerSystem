@@ -27,7 +27,7 @@ module.exports = (sequelize) => {
       },
       ownedIngredientId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: { model: 'owned_ingredients', key: 'ownedIngredientId' },
       },
       postContent: {
