@@ -75,25 +75,25 @@
       </a>
       <nav class="sidebar-nav">
         <a href="/dashboard" class="nav-item <%= title === '대시보드' ? 'active' : '' %>">
-          <span class="nav-icon">🏠</span><span class="nav-label">메인</span>
+          <span class="nav-label">메인</span>
         </a>
         <a href="/fridge" class="nav-item <%= title === '내 냉장고' ? 'active' : '' %>">
-          <span class="nav-icon">🧊</span><span class="nav-label">내 냉장고</span>
+          <span class="nav-label">내 냉장고</span>
         </a>
         <a href="/sharing" class="nav-item <%= title && title.includes('나눔') ? 'active' : '' %>">
-          <span class="nav-icon">🤝</span><span class="nav-label">우리동네 나눔터</span>
+          <span class="nav-label">우리동네 나눔터</span>
         </a>
         <a href="/park" class="nav-item <%= title === '내 공원' ? 'active' : '' %>" id="park-nav-item">
-          <span class="nav-icon">🌿</span><span class="nav-label">내 공원</span>
+          <span class="nav-label">내 공원</span>
           <% if (user && user.hasNewParkItem) { %>
             <span style="background:#e53935;color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px;">NEW</span>
           <% } %>
         </a>
         <a href="/activity" class="nav-item <%= title === '내 활동' ? 'active' : '' %>">
-          <span class="nav-icon">📊</span><span class="nav-label">내 활동</span>
+          <span class="nav-label">내 활동</span>
         </a>
         <a href="/settings" class="nav-item <%= title === '설정' ? 'active' : '' %>">
-          <span class="nav-icon">⚙️</span><span class="nav-label">설정</span>
+          <span class="nav-label">설정</span>
         </a>
       </nav>
     </aside>
