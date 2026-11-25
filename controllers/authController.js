@@ -38,7 +38,7 @@ const authController = {
   // POST /auth/register
   postRegister: async (req, res) => {
     try {
-      const { memberId, memberName, password, city, district, dong, contact } = req.body;
+      const { memberId, memberName, password, city, dong, contact } = req.body;
 
       const existing = await Member.findByPk(memberId);
       if (existing) {
@@ -53,7 +53,7 @@ const authController = {
         memberName,
         password: hashedPw,
         city,
-        district,
+        district: '미설정',
         dong,
         contact,
       });
