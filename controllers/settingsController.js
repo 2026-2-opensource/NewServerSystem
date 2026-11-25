@@ -31,12 +31,9 @@ const settingsController = {
     try {
       const memberId = req.user.memberId;
       
-      // 💡 [수정 핵심]: View에서 분리해서 넘겨주는 city, district, dong을 각각 받아옵니다.
-      const { memberName, city, district, dong, contact, newPassword } = req.body;
-      const member = await Member.findByPk(memberId);
-
-      // 💡 개별 주소 조각들을 전부 DB 업데이트 객체에 포함시킵니다.
-      const updateData = { memberName, city, district, dong, contact };
+      // 💡 [수정 핵심]: View에서 분리해서 넘겨주는 city, dong을 각각 받아옵니다.
+      const { memberName, city, dong, contact, newPassword } = req.body;
+      const updateData = { memberName, city, dong, contact };
 
       // 새 비밀번호가 입력되었고, 공백이 아니며, 6자 이상일 때만 암호화해서 변경에 반영
       if (newPassword && newPassword.trim().length >= 6) {
@@ -47,10 +44,8 @@ const settingsController = {
       await member.update(updateData);
 
       // 💡 [매우 중요]: 현재 로그인된 세션 정보(req.user)도 쪼개진 주소로 각각 최신화합니다.
-      // 이렇게 동기화해 줘야 나눔 게시판으로 즉시 이동했을 때 갱신된 구(district)를 정상 인식합니다!
       req.user.memberName = memberName;
       req.user.city = city;         // 세션에 '시/도' 최신화
-      req.user.district = district; // 세션에 '시/군/구' 최신화 (나눔 게시글 구 단위 묶음 기준점)
       req.user.dong = dong;         // 세션에 '읍/면/동' 최신화
       req.user.contact = contact;
       

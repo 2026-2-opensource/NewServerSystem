@@ -92,16 +92,9 @@ const sharingController = {
 
       let whereClause = {};
       
-      // 구와 동이 모두 있어야만 필터링 되도록
-      if (district && district !== '미설정' && dong && dong !== '미설정') {
-        whereClause.district = district; 
-        whereClause.dong = dong;
-      } else {
-        // 둘 중 하나라도 없을 경우
-        if (district && district !== '미설정') whereClause.district = district;
-        else if (dong && dong !== '미설정') whereClause.dong = dong;
-        else if (city && city !== '미설정') whereClause.city = city;
-      }
+      // 동만 있어도 필터링 되도록
+      if (dong && dong !== '미설정') whereClause.dong = dong;
+      else if (city && city !== '미설정') whereClause.city = city;
 
       if (filter === 'sharing' || filter === 'reserved') whereClause.sharingStatus = false;
       else if (filter === 'done') whereClause.sharingStatus = true;
@@ -195,7 +188,7 @@ const sharingController = {
         return diffDays >= 2; 
       });
 
-      const locationText = (district && district !== '미설정' && dong && dong !== '미설정') ? `${district} ${dong}` : (dong || '우리 동네');
+      const locationText = dong || '우리 동네';
 
       res.render('sharing/index', {
         title: '나눔 게시판', layout: 'layouts/main',
@@ -226,13 +219,7 @@ const sharingController = {
       
       let whereClause = { sharingId: req.params.id };
       
-      if (district && district !== '미설정' && dong && dong !== '미설정') {
-        whereClause.district = district;
-        whereClause.dong = dong;
-      } else {
-        if (district && district !== '미설정') whereClause.district = district;
-        else if (dong && dong !== '미설정') whereClause.dong = dong;
-      }
+      if (dong && dong !== '미설정') whereClause.dong = dong;
 
 
       const post = await SharingPost.findOne({
