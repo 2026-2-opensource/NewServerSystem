@@ -64,6 +64,11 @@ module.exports = (sequelize) => {
       hasNewParkItem: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
+        defaultValue: true,
+      },
+      christmasGiftReceived: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
         defaultValue: false,
       },
       sharingAgreement: {
