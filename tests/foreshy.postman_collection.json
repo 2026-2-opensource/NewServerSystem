@@ -56,6 +56,10 @@
                   "value": "서울특별시"
                 },
                 {
+                  "key": "district",
+                  "value": "성북구"
+                },
+                {
                   "key": "dong",
                   "value": "동선동"
                 },
@@ -980,6 +984,39 @@
               "raw": "{{baseUrl}}park",
               "host": [
                 "{{baseUrl}}park"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "크리스마스 선물 받기",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"크리스마스 선물 받기 성공\", function () {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "  pm.expect(pm.response.json().success).to.eql(true);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}park/claim-gift",
+              "host": [
+                "{{baseUrl}}park"
+              ],
+              "path": [
+                "claim-gift"
               ]
             }
           },
