@@ -36,7 +36,7 @@ if(post.ownedIngredient) {
       </div>
       <div class="detail-meta">
         <span class="meta-tag">👤 <%= post.member ? post.member.memberName : '알 수 없는 사용자' %></span>
-        <span class="meta-tag">📍 <%= post.district %> <%= post.dong %></span>
+        <span class="meta-tag">📍 <%= post.dong %></span>
         
         <%
           let qtyStr = String(post.registeredQuantity || '1개');

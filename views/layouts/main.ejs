@@ -75,25 +75,25 @@
       </a>
       <nav class="sidebar-nav">
         <a href="/dashboard" class="nav-item <%= title === '대시보드' ? 'active' : '' %>">
-          <span class="nav-icon">🏠</span><span class="nav-label">메인</span>
+          <span class="nav-label">메인</span>
         </a>
         <a href="/fridge" class="nav-item <%= title === '내 냉장고' ? 'active' : '' %>">
-          <span class="nav-icon">🧊</span><span class="nav-label">내 냉장고</span>
+          <span class="nav-label">내 냉장고</span>
         </a>
         <a href="/sharing" class="nav-item <%= title && title.includes('나눔') ? 'active' : '' %>">
-          <span class="nav-icon">🤝</span><span class="nav-label">우리동네 나눔터</span>
+          <span class="nav-label">우리동네 나눔터</span>
         </a>
         <a href="/park" class="nav-item <%= title === '내 공원' ? 'active' : '' %>" id="park-nav-item">
-          <span class="nav-icon">🌿</span><span class="nav-label">내 공원</span>
+          <span class="nav-label">내 공원</span>
           <% if (user && user.hasNewParkItem) { %>
             <span style="background:#e53935;color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:4px;">NEW</span>
           <% } %>
         </a>
         <a href="/activity" class="nav-item <%= title === '내 활동' ? 'active' : '' %>">
-          <span class="nav-icon">📊</span><span class="nav-label">내 활동</span>
+          <span class="nav-label">내 활동</span>
         </a>
         <a href="/settings" class="nav-item <%= title === '설정' ? 'active' : '' %>">
-          <span class="nav-icon">⚙️</span><span class="nav-label">설정</span>
+          <span class="nav-label">설정</span>
         </a>
       </nav>
     </aside>
@@ -134,13 +134,6 @@
               <div>
                   <strong style="color:#2d5a27; font-size:16px; margin-right:12px;">FORESHY</strong>
                   <span>이웃과 함께하는 따뜻한 식재료 나눔</span>
-              </div>
-              <div style="display:flex; gap:16px; font-weight:500;">
-                  <a href="#" style="color:#666; text-decoration:none;">이용약관</a>
-                  <a href="#" style="color:#2d5a27; text-decoration:none; font-weight:700;">개인정보처리방침</a>
-                  <a href="#" style="color:#666; text-decoration:none;">고객센터</a>
-              </div>
-          </div>
           <div style="margin-top:16px; border-top:1px solid #e0e0e0; padding-top:16px; font-size:12px; color:#999; text-align:center;">
               &copy; 2026 FORESHY. All rights reserved. 본 서비스는 개인 간의 무상 나눔을 목적으로 하며, 불법 거래 및 상업적 목적의 이용을 엄격히 금지합니다.
           </div>

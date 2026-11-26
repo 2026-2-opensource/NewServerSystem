@@ -28,7 +28,7 @@
       <div class="profile-avatar"><img src="/images/character/front.png" style="width:56px;height:56px;object-fit:contain;"></div>
       <div class="profile-name"><%= user.memberName %></div>
       <div class="profile-email"><%= user.memberId %></div>
-      <div class="profile-dong">📍 <%= user.district %> <%= user.dong %></div>
+      <div class="profile-dong">📍 <%= user.dong %></div>
     </div>
 
     <form id="settingsForm" action="/settings/update" method="POST" onsubmit="return validatePassword()">
@@ -40,10 +40,6 @@
       <div class="form-group">
         <label class="form-label">시</label>
         <input type="text" name="city" class="form-input editable-input" value="<%= user.city %>" required maxlength="20" disabled placeholder="예: 경기도, 서울특별시">
-      </div>
-      <div class="form-group">
-        <label class="form-label">구</label>
-        <input type="text" name="district" class="form-input editable-input" value="<%= user.district %>" required maxlength="20" disabled placeholder="예: 일산동구, 마포구, 분당구">
       </div>
       <div class="form-group">
         <label class="form-label">동</label>
