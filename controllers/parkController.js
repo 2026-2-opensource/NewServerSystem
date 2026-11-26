@@ -1,5 +1,8 @@
 const { Park, ParkItem, ParkItemTemplate, Inventory, Member } = require('../models');
 
+// 크리스마스 선물로 지급할 아이템 (ParkItemTemplate.itemImage 값)
+const CHRISTMAS_GIFT_KEYS = ['snowman', 'gingerbread', 'xmas_tree', 'xmas_light', 'wood_chair'];
+
 const parkController = {
   getPark: async (req, res) => {
     try {
@@ -40,8 +43,16 @@ const parkController = {
 
       const member = await Member.findByPk(memberId);
       const hasNewParkItem = member.hasNewParkItem;
-      await member.update({ hasNewParkItem: false });
+      // 크리스마스 선물을 받기 전에는 NEW 배지 유지
+      if (member.christmasGiftReceived) {
+        await member.update({ hasNewParkItem: false });
+      }
       await Inventory.update({ isNew: false }, { where: { memberId } });
+
+      // 크리스마스 선물 (아직 안 받은 사람만)
+      const giftTemplates = member.christmasGiftReceived ? [] :
+        (await ParkItemTemplate.findAll({ where: { itemImage: CHRISTMAS_GIFT_KEYS } }))
+          .sort((a, b) => CHRISTMAS_GIFT_KEYS.indexOf(a.itemImage) - CHRISTMAS_GIFT_KEYS.indexOf(b.itemImage));
 
       res.render('park/index', {
         title: '내 공원',
@@ -52,6 +63,7 @@ const parkController = {
         member,
         user: req.user,
         hasNewParkItem,
+        giftItems: giftTemplates.map(t => ({ itemName: t.itemName, itemImage: t.itemImage, itemEmoji: t.itemEmoji })),
       });
     } catch (err) {
       console.error(err);
@@ -167,6 +179,40 @@ const parkController = {
       res.json({ success: true, inventory });
     } catch (err) {
       res.status(500).json({ success: false });
+    }
+  },
+
+  claimChristmasGift: async (req, res) => {
+    try {
+      const memberId = req.user.memberId;
+
+      const templates = await ParkItemTemplate.findAll({ where: { itemImage: CHRISTMAS_GIFT_KEYS } });
+      if (templates.length === 0) {
+        return res.status(500).json({ success: false, message: '선물 아이템이 DB에 없어요.' });
+      }
+
+      // 아직 안 받은 경우에만 true로 바꿈 (중복 클릭/새로고침 방지)
+      const [updated] = await Member.update(
+        { christmasGiftReceived: true, hasNewParkItem: false },
+        { where: { memberId, christmasGiftReceived: false } }
+      );
+      if (!updated) {
+        return res.json({ success: false, message: '이미 선물을 받았어요.' });
+      }
+
+      for (const t of templates) {
+        const inv = await Inventory.findOne({ where: { memberId, templateId: t.templateId } });
+        if (inv) {
+          await inv.update({ quantity: inv.quantity + 1 });
+        } else {
+          await Inventory.create({ memberId, templateId: t.templateId, quantity: 1 });
+        }
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, message: err.message });
     }
   },
 };

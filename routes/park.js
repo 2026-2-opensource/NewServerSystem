@@ -8,5 +8,6 @@ router.post('/place', isLoggedIn, parkController.placeItem);
 router.post('/remove', isLoggedIn, parkController.removeItem);
 router.post('/save', isLoggedIn, parkController.saveState);
 router.get('/inventory', isLoggedIn, parkController.getInventory);
+router.post('/claim-gift', isLoggedIn, parkController.claimChristmasGift);
 
 module.exports = router;
