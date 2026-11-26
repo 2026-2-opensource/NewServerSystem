@@ -60,6 +60,12 @@ const parkItems = [
   // 바닥장식
   { itemName:'돌', itemCategory:'바닥', itemEmoji:'🪨', itemImage:'stone', requiredPoints:10, rarity:'common', width:1, height:1, defaultW:5, defaultH:4 },
   { itemName:'돌바닥', itemCategory:'바닥', itemEmoji:'🪨', itemImage:'stoneTile', requiredPoints:15, rarity:'common', width:1, height:1, defaultW:7, defaultH:5 },
+  // 크리스마스
+  { itemName:'눈사람', itemCategory:'장식', itemEmoji:'⛄', itemImage:'snowman', requiredPoints:40, rarity:'rare', width:1, height:2, defaultW:7, defaultH:11 },
+  { itemName:'진저브레드하우스', itemCategory:'장식', itemEmoji:'🏠', itemImage:'gingerbread', requiredPoints:90, rarity:'epic', width:2, height:2, defaultW:12, defaultH:13 },
+  { itemName:'나무의자', itemCategory:'가구', itemEmoji:'🪑', itemImage:'wood_chair', requiredPoints:30, rarity:'common', width:1, height:1, defaultW:7, defaultH:8 },
+  { itemName:'크리스마스전등', itemCategory:'조명', itemEmoji:'✨', itemImage:'xmas_light', requiredPoints:35, rarity:'common', width:2, height:1, defaultW:12, defaultH:5 },
+  { itemName:'크리스마스트리', itemCategory:'식물', itemEmoji:'🎄', itemImage:'xmas_tree', requiredPoints:70, rarity:'rare', width:2, height:3, defaultW:9, defaultH:16 },
 ];
 
 async function seed() {

@@ -39,6 +39,11 @@ const ITEM_IMAGES = {
   tree_pine:    { default:'tree_pine.png' },
   tree:         { default:'tree.png' },
   weed:         { default:'weed.png' },
+  snowman:      { front:'snowman_front.png', back:'snowman_back.png', left:'snowman_left.png', right:'snowman_right.png' },
+  gingerbread:  { front:'gingerbread_front.png', back:'gingerbread_back.png', left:'gingerbread_left.png', right:'gingerbread_right.png' },
+  wood_chair:   { default:'wood_chair.png' },
+  xmas_light:   { default:'xmas_light.png' },
+  xmas_tree:    { default:'xmas_tree.png' },
 };
 
 function getImageSrc(itemKey, direction) {

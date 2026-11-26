@@ -78,6 +78,8 @@
                 lamp1:'lamp1.png', lamp2:'lamp2.png', picnic:'picnic.png', pond:'pond.png',
                 pot:'pot.png', stone:'stone.png', stoneTile:'stoneTile.png',
                 tree_cherry:'tree_cherry.png', tree_pine:'tree_pine.png', tree:'tree.png', weed:'weed.png',
+                snowman:'snowman_front.png', gingerbread:'gingerbread_front.png',
+                wood_chair:'wood_chair.png', xmas_light:'xmas_light.png', xmas_tree:'xmas_tree.png',
               };
               const imgFile = inv.template.itemImage ? (imgMap[inv.template.itemImage] || inv.template.itemImage + '.png') : (inv.template.itemEmoji || '');
             %>
@@ -106,6 +108,78 @@
     </div>
   </div>
 </div>
+
+<% if (giftItems && giftItems.length > 0) { %>
+<%
+  const giftImgMap = { snowman:'snowman_front.png', gingerbread:'gingerbread_front.png' };
+%>
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+  #giftOverlay { position:fixed; inset:0; background:rgba(40,60,40,.55); z-index:9999;
+    display:flex; align-items:center; justify-content:center; font-family:'Jua','Malgun Gothic',sans-serif; }
+  .gift-letter { width:min(440px,92vw); padding:10px; border-radius:22px;
+    background:repeating-linear-gradient(45deg,#e9625e 0 12px,#fff6e6 12px 24px);
+    box-shadow:0 10px 30px rgba(0,0,0,.3); animation:giftPop .45s cubic-bezier(.2,1.4,.4,1); }
+  .gift-paper { position:relative; border-radius:14px; padding:26px 22px 22px; text-align:center;
+    background:#fffaf0 repeating-linear-gradient(transparent 0 31px,#f0e2c4 31px 32px);
+    background-position:0 14px; }
+  .gift-stamp { position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+    width:44px; height:44px; border-radius:50%; background:#fff6e6; border:3px solid #e9625e;
+    display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .gift-stamp img { width:36px; height:36px; object-fit:contain; border-radius:50%; }
+  .gift-sign img { width:24px; height:24px; object-fit:contain; vertical-align:middle; margin-left:2px; }
+  .gift-to { text-align:left; color:#8a6d3b; font-size:15px; margin:10px 0 6px; }
+  .gift-title { color:#d9534f; font-size:21px; margin:6px 0 4px; line-height:1.4; }
+  .gift-msg { color:#6b5a3e; font-size:14px; line-height:32px; margin:0; }
+  .gift-items { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin:14px 0 6px; }
+  .gift-item { width:calc((100% - 20px) / 3); }
+  .gift-bubble { width:68px; height:68px; margin:0 auto; border-radius:50%; background:#fff;
+    border:3px solid #bfe3b4; box-shadow:0 3px 0 #a9d19c; display:flex; align-items:center; justify-content:center; }
+  .gift-item:nth-child(odd) .gift-bubble { transform:rotate(-4deg); }
+  .gift-item:nth-child(even) .gift-bubble { transform:rotate(4deg); }
+  .gift-bubble img { width:52px; height:52px; object-fit:contain; }
+  .gift-name { font-size:12px; color:#6b5a3e; margin-top:5px; white-space:nowrap; }
+  .gift-sign { text-align:right; color:#8a6d3b; font-size:15px; margin:6px 4px 12px; }
+  #giftConfirmBtn { background:#7ac96b; color:#fff; border:0; border-radius:999px; padding:10px 40px;
+    font-family:inherit; font-size:17px; cursor:pointer; box-shadow:0 4px 0 #5aa84d; }
+  #giftConfirmBtn:active { transform:translateY(3px); box-shadow:0 1px 0 #5aa84d; }
+  #giftConfirmBtn:disabled { opacity:.6; cursor:default; }
+  @keyframes giftPop { from { transform:scale(.6) rotate(-4deg); opacity:0; } to { transform:scale(1) rotate(0); opacity:1; } }
+</style>
+<div id="giftOverlay">
+  <div class="gift-letter">
+    <div class="gift-paper">
+      <div class="gift-stamp"><img src="/images/character/front.png" alt="포레시"></div>
+      <div class="gift-to"><%= user.memberName %>님께</div>
+      <h2 class="gift-title">포레시가 크리스마스 선물을<br>보냈어요!</h2>
+      <p class="gift-msg">올 한 해도 식재료를 아끼고 나눠줘서 고마워요.<br>공원을 예쁘게 꾸며 보세요!</p>
+      <div class="gift-items">
+        <% giftItems.forEach(g => { %>
+          <div class="gift-item">
+            <div class="gift-bubble">
+              <img src="/images/park/items/<%= giftImgMap[g.itemImage] || (g.itemImage + '.png') %>" alt="<%= g.itemName %>"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+              <span style="display:none;font-size:32px;"><%= g.itemEmoji || '🎁' %></span>
+            </div>
+            <div class="gift-name"><%= g.itemName %></div>
+          </div>
+        <% }) %>
+      </div>
+      <div class="gift-sign">- 포레시가 <img src="/images/character/front.png" alt="포레시"></div>
+      <button id="giftConfirmBtn">고마워요!</button>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('giftConfirmBtn').addEventListener('click', async function () {
+    this.disabled = true;
+    try {
+      await fetch('/park/claim-gift', { method: 'POST' });
+    } catch (e) { console.error(e); }
+    location.reload();
+  });
+</script>
+<% } %>
 
 <script>
   const serverPlacedItems = <%- placedItems %>;
